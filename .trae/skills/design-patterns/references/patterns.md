@@ -154,4 +154,3 @@ interface OrderRepository {
 
 - 注入边界依赖：Repository、Client、Clock、IdGenerator
 - 避免 Service Locator（隐式全局查找依赖）
-

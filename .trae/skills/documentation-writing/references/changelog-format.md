@@ -17,26 +17,33 @@
 ## [Unreleased]
 
 ### Added
+
 - ...
 
 ### Changed
+
 - ...
 
 ### Fixed
+
 - ...
 
 ### Deprecated
+
 - ...
 
 ### Removed
+
 - ...
 
 ### Security
+
 - ...
 
 ## [1.2.3] - 2026-01-21
 
 ### Added
+
 - ...
 ```
 
@@ -52,4 +59,3 @@
 - Unreleased 已清空并落入本次版本
 - 破坏性变更有迁移步骤与回滚提示
 - 版本号符合变更级别（major/minor/patch）
-

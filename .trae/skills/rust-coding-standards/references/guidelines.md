@@ -27,7 +27,7 @@
 
 示例（rustdoc + 示例可被 doctest 验证）：
 
-```rust
+````rust
 /// Parse a positive integer from string.
 ///
 /// # Errors
@@ -44,7 +44,7 @@ pub fn parse_positive_i64(input: &str) -> Result<i64, ParseError> {
     }
     Ok(value)
 }
-```
+````
 
 ## 2. 所有权与借用规则
 
@@ -215,4 +215,3 @@ fn parse_user_id_rejects_invalid() {
 - 安全：unsafe 已封装且不变量明确；FFI 输入被当作不可信处理；依赖可审计
 - 可维护性：可见性收敛；newtype/enum 表达不变量；外部依赖可替换
 - 测试：错误/边界覆盖齐；关键公开 API 有回归用例；必要时增加属性测试
-

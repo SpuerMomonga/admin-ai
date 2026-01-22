@@ -31,4 +31,3 @@ license: Complete terms in LICENSE.txt
 - 集成测试策略：references/integration-testing.md
 - 覆盖率要求：references/coverage.md
 - 测试数据管理：references/test-data.md
-

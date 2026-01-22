@@ -22,4 +22,3 @@ license: Complete terms in LICENSE.txt
 - API 文档规范：references/api-docs.md
 - 技术方案文档结构：references/technical-proposal-template.md
 - 变更记录格式要求：references/changelog-format.md
-

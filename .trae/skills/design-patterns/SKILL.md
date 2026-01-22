@@ -18,4 +18,3 @@ license: Complete terms in LICENSE.txt
 - 常用设计模式实现示例：references/patterns.md
 - 模式选择决策树：references/decision-tree.md
 - 反模式识别指南：references/anti-patterns.md
-

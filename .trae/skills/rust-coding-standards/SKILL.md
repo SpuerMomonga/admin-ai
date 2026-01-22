@@ -15,4 +15,3 @@ license: Complete terms in LICENSE.txt
 ## 参考文档
 
 - 完整规范与示例：references/guidelines.md
-

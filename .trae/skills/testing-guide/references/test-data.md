@@ -36,4 +36,3 @@
 - `factories/`：对象工厂（UserFactory、OrderFactory）
 - `fixtures/`：通用夹具（最小用户、最小组织）
 - `seeds/`：少量共享种子（仅用于集成测试启动）
-

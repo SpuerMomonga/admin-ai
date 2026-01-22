@@ -29,12 +29,12 @@
 
 ```ts
 function isNonEmptyString(value: unknown): value is string {
-  return typeof value === "string" && value.trim().length > 0
+  return typeof value === 'string' && value.trim().length > 0
 }
 
 export function normalizeUserId(value: unknown): string {
   if (!isNonEmptyString(value)) {
-    throw new ValidationError("USER_ID_INVALID", "userId must be a non-empty string")
+    throw new ValidationError('USER_ID_INVALID', 'userId must be a non-empty string')
   }
   return value.trim()
 }
@@ -75,10 +75,10 @@ async function fetchUserById(userId: string): Promise<User | null> {
 示例（模块导出边界）：
 
 ```ts
+export type { User } from './domain/user'
+export { UserNotFoundError } from './errors'
 // users/index.ts (public API)
-export { getUserById } from "./service/getUserById"
-export type { User } from "./domain/user"
-export { UserNotFoundError } from "./errors"
+export { getUserById } from './service/getUserById'
 ```
 
 ## 4. 错误处理
@@ -110,8 +110,10 @@ export class ValidationError extends AppError {}
 export class NotFoundError extends AppError {}
 
 export function toHttpStatus(error: unknown): number {
-  if (error instanceof ValidationError) return 400
-  if (error instanceof NotFoundError) return 404
+  if (error instanceof ValidationError)
+    return 400
+  if (error instanceof NotFoundError)
+    return 404
   return 500
 }
 ```
@@ -168,7 +170,8 @@ async function mapWithConcurrency<T, R>(
 ```ts
 function safeAssign(target: Record<string, unknown>, patch: Record<string, unknown>): void {
   for (const [key, value] of Object.entries(patch)) {
-    if (key === "__proto__" || key === "constructor" || key === "prototype") continue
+    if (key === '__proto__' || key === 'constructor' || key === 'prototype')
+      continue
     target[key] = value
   }
 }
@@ -189,14 +192,14 @@ function safeAssign(target: Record<string, unknown>, patch: Record<string, unkno
 示例（判别联合替代布尔参数）：
 
 ```ts
-type Payment =
-  | { kind: "card"; token: string }
-  | { kind: "bankTransfer"; accountId: string }
+type Payment
+  = | { kind: 'card', token: string }
+    | { kind: 'bankTransfer', accountId: string }
 
 function pay(payment: Payment): void {
-  if (payment.kind === "card") {
+  if (payment.kind === 'card') {
     // ...
-    return
+
   }
   // ...
 }
@@ -216,7 +219,7 @@ function pay(payment: Payment): void {
 
 ```ts
 export interface Clock {
-  now(): Date
+  now: () => Date
 }
 
 export class SystemClock implements Clock {
@@ -236,4 +239,3 @@ export class SystemClock implements Clock {
 - 安全：边界输入做运行时校验；禁用动态执行；日志脱敏；依赖风险可控
 - 可维护性：DTO/内部模型分离；依赖注入；requestId 可追踪
 - 测试：新增/修复逻辑有对应用例；关键链路有集成覆盖；测试可重复
-
