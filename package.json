@@ -13,12 +13,12 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc -b",
-    "test:u": "pnpm -F apps/* test:unit",
-    "test:e": "pnpm -F apps/* test:e2e",
-    "test": "pnpm test:u && pnpm test:e"
+    "test:unit": "pnpm -F @admin-ai/web test:unit",
+    "test:e2e": "pnpm -F @admin-ai/web test:e2e",
+    "test": "pnpm test:unit && pnpm test:e2e"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^5.3.0",
+    "@antfu/eslint-config": "^7.2.0",
     "@playwright/test": "^1.57.0",
     "@types/node": "^22",
     "@vitest/browser-playwright": "^4.0.15",
