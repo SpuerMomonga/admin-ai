@@ -12,6 +12,7 @@
     "build": "pnpm -F @admin-ai/web build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "postinstall": "pnpm exec playwright install",
     "typecheck": "tsc -b",
     "test:unit": "pnpm -F @admin-ai/web test:unit",
     "test:e2e": "pnpm -F @admin-ai/web test:e2e",

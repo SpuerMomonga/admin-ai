@@ -62,6 +62,12 @@ importers:
       '@inlang/paraglide-js':
         specifier: ^2.6.0
         version: 2.9.1
+      '@inlang/plugin-m-function-matcher':
+        specifier: ^2.1.4
+        version: 2.1.4
+      '@inlang/plugin-message-format':
+        specifier: ^4.2.0
+        version: 4.2.0
       '@sveltejs/adapter-static':
         specifier: ^3.0.10
         version: 3.0.10(@sveltejs/kit@2.50.1(@sveltejs/vite-plugin-svelte@6.2.4(svelte@5.47.1)(vite@7.3.1(@types/node@22.19.7)(jiti@2.6.1)(lightningcss@1.30.2)(yaml@2.8.2)))(svelte@5.47.1)(typescript@5.9.3)(vite@7.3.1(@types/node@22.19.7)(jiti@2.6.1)(lightningcss@1.30.2)(yaml@2.8.2)))
@@ -488,6 +494,12 @@ packages:
   '@inlang/paraglide-js@2.9.1':
     resolution: {integrity: sha512-hciFnOKGVA10BmLixmFFIOZwNFqlyhKwvC8V+mEh/XP1WaEUtwijBlcIn2odwN9obuGxI8Fu05KHOUuETrpj+g==}
     hasBin: true
+
+  '@inlang/plugin-m-function-matcher@2.1.4':
+    resolution: {integrity: sha512-sho0GYjtv8IY85RiAEImcMQ9GkDkoh7SqNx4/k5vqMZPgAeFCd/PjPr2bK9H76Elqa2GjWAN1kcGb29Km56JIg==}
+
+  '@inlang/plugin-message-format@4.2.0':
+    resolution: {integrity: sha512-OIsrlC5VhRfKMCWIaVRtQvn1Iu58gNyuawwE7E/cQTZ3+ADAMVQWkMVw39pIOyaKIomavMvHgSECJLBISpt8mg==}
 
   '@inlang/recommend-sherlock@0.2.1':
     resolution: {integrity: sha512-ckv8HvHy/iTqaVAEKrr+gnl+p3XFNwe5D2+6w6wJk2ORV2XkcRkKOJ/XsTUJbPSiyi4PI+p+T3bqbmNx/rDUlg==}
@@ -1539,6 +1551,11 @@ packages:
   flat-cache@4.0.1:
     resolution: {integrity: sha512-f7ccFPK3SXFHpx15UIGyRJ/FJQctuKZ0zVuN3frBo4HnK3cay9VEW0R6yPYFHC0AgqhukPzKjq22t5DmAyqGyw==}
     engines: {node: '>=16'}
+
+  flat@6.0.1:
+    resolution: {integrity: sha512-/3FfIa8mbrg3xE7+wAhWeV+bd7L2Mof+xtZb5dRDKZ+wDvYJK4WDYeIOuOhre5Yv5aQObZrlbRmk3RTSiuQBtw==}
+    engines: {node: '>=18'}
+    hasBin: true
 
   flatted@3.3.3:
     resolution: {integrity: sha512-GX+ysw4PBCz0PzosHDepZGANEuFCMLrnRTiEy9McGjmkCQYwRq4A/X786G/fjM/+OjsWSU1ZrY5qyARZmO/uwg==}
@@ -2921,6 +2938,16 @@ snapshots:
     transitivePeerDependencies:
       - babel-plugin-macros
 
+  '@inlang/plugin-m-function-matcher@2.1.4':
+    dependencies:
+      '@inlang/sdk': 2.6.2
+    transitivePeerDependencies:
+      - babel-plugin-macros
+
+  '@inlang/plugin-message-format@4.2.0':
+    dependencies:
+      flat: 6.0.1
+
   '@inlang/recommend-sherlock@0.2.1':
     dependencies:
       comment-json: 4.5.1
@@ -4026,6 +4053,8 @@ snapshots:
     dependencies:
       flatted: 3.3.3
       keyv: 4.5.4
+
+  flat@6.0.1: {}
 
   flatted@3.3.3: {}
 

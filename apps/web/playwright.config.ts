@@ -7,4 +7,5 @@ export default defineConfig({
     timeout: 120 * 1000,
   },
   testDir: 'e2e',
+  testMatch: ['**/*.e2e.{js,mjs,ts}', '**/*.{spec,test}.{js,mjs,ts}'],
 })

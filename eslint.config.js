@@ -1,10 +1,15 @@
 import antfu from '@antfu/eslint-config'
 
-export default antfu([
+export default antfu(
   {
     svelte: true,
     typescript: true,
     formatters: true,
+    ignores: [
+      '**/.vscode/**',
+      '**/project.inlang/**',
+      '**/src/lib/paraglide/**',
+    ],
   },
   {
     rules: {
@@ -22,15 +27,11 @@ export default antfu([
       'pnpm/json-prefer-workspace-settings': 'off',
       'no-restricted-syntax': 'off',
     },
-    ignores: [
-      '**/node_modules/**',
-      '**/dist/**',
-      '**/build/**',
-      '**/coverage/**',
-      '**/.svelte-kit/**',
-      '**/.output/**',
-      '**/.vercel/**',
-      '**/.netlify/**',
-    ],
   },
-])
+  {
+    files: ['pnpm-workspace.yaml'],
+    rules: {
+      'pnpm/yaml-enforce-settings': 'off',
+    },
+  },
+)
