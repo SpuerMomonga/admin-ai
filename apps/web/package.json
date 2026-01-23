@@ -1,5 +1,5 @@
 {
-  "name": "@admin-ai/app",
+  "name": "@admin-ai/web",
   "type": "module",
   "version": "0.0.1",
   "private": true,
@@ -8,6 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "prepare": "svelte-kit sync || echo ''",
+    "test:unit": "vitest run",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
   },
@@ -17,8 +18,13 @@
     "@sveltejs/kit": "^2.49.1",
     "@sveltejs/vite-plugin-svelte": "^6.2.1",
     "@tailwindcss/vite": "^4.1.17",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.7.0",
+    "@testing-library/svelte": "^5.3.1",
+    "jsdom": "^27.4.0",
     "svelte": "^5.45.6",
     "svelte-check": "^4.3.4",
-    "tailwindcss": "^4.1.17"
+    "tailwindcss": "^4.1.17",
+    "vitest": "^4.0.18"
   }
 }

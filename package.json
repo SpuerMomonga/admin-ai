@@ -3,23 +3,35 @@
   "type": "module",
   "private": true,
   "packageManager": "pnpm@10.23.0",
+  "engines": {
+    "node": ">=18",
+    "pnpm": ">=10"
+  },
   "scripts": {
-    "dev": "pnpm --filter @admin-ai/app dev",
-    "build": "pnpm --filter @admin-ai/app build",
+    "dev": "pnpm --filter @admin-ai/web dev",
+    "build": "pnpm --filter @admin-ai/web build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "typecheck": "tsc -b"
+    "typecheck": "tsc -b",
+    "test:unit": "pnpm -r --filter \"./apps/**\" --if-present test:unit",
+    "test:e2e": "pnpm exec playwright install && playwright test",
+    "test": "pnpm test:unit && pnpm test:e2e"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^5.3.0",
+    "@playwright/test": "^1.57.0",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/svelte": "^5.3.1",
     "@types/node": "^22",
     "eslint": "^9.39.1",
     "eslint-plugin-format": "^1.3.1",
     "eslint-plugin-svelte": "^3.13.1",
+    "jsdom": "^27.4.0",
     "svelte-eslint-parser": "^1.3.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.48.1",
     "vite": "^7.2.6",
-    "vite-plugin-devtools-json": "^1.0.0"
+    "vite-plugin-devtools-json": "^1.0.0",
+    "vitest": "^4.0.18"
   }
 }
