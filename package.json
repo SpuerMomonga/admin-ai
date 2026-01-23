@@ -4,9 +4,10 @@
   "private": true,
   "packageManager": "pnpm@10.23.0",
   "scripts": {
-    "dev": "pnpm --filter app dev",
+    "dev": "pnpm --filter @admin-ai/app dev",
+    "build": "pnpm --filter @admin-ai/app build",
     "lint": "eslint .",
-    "format": "eslint . --fix",
+    "lint:fix": "eslint . --fix",
     "typecheck": "tsc -b"
   },
   "devDependencies": {
