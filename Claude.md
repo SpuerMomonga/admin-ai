@@ -9,7 +9,7 @@ admin-ai 是一个后台管理系统，集成Agents可以实现系统自动化�
 ## 开发命令
 
 前端项目开发命令
-前端安装、启动等命令都使用pnpm，安装依赖禁止用npx、npm
+前端安装、启动等命令都使用pnpm，安装依赖和运行命令禁止用npx、npm
 
 ```bash
 
@@ -18,6 +18,9 @@ pnpm dev # 启动开发服务器
 pnpm build # 构建项目
 pnpm lint # 检查代码格式
 pnpm lint:fix # 检查代码格式并格式化代码
+pnpm test:unit # 执行单元测试
+pnpm test:e2e #执行e2e测试
+pnpm test # 执行单元测试和e2e测试
 pnpm typecheck # 检查类型错误
 
 ```
@@ -26,7 +29,7 @@ pnpm typecheck # 检查类型错误
 
 ### 前端规范
 
-- 完成一个模块、代码修改后需要运行 `pnpm format` 检查代码格式并格式化代码和`pnpm typecheck`检查类型错误
+- 完成代码重构、模块、页面编写等需要运行代码格式检查、类型检查、调用测试技能编写测试用例，并且通过单元测试，涉及的代码包含页面需要通过e2e测试
 - 保持页面和UI库风格一致性，配色使用蓝白配色
 - 新增颜色时使用css变量并在`app/src/routes/layout.css`中配置，并且同时配置tailwindcss的颜色变量
 - 前端开发使用shadcn-svelte组件库

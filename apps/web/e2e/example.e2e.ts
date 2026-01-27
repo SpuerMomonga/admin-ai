@@ -1,15 +1,11 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test'
 
 test('has title', async ({ page }) => {
-  await page.goto('/');
-  // Expect the title to contain a substring.
-  // Note: Adjust this expectation based on the actual title of your app
-  // For now, checking if it loads without error (title might be 'SvelteKit app' or similar)
-  // Let's assume the title is defined in app.html or layout
-});
+  await page.goto('/')
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Welcome to SvelteKit')
+})
 
 test('home page has heading', async ({ page }) => {
-  await page.goto('/');
-  // Check for some content.
-  // await expect(page.locator('h1')).toBeVisible();
-});
+  await page.goto('/')
+  await expect(page.getByRole('link', { name: 'svelte.dev/docs/kit' })).toBeVisible()
+})
