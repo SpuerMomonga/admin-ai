@@ -1,0 +1,21 @@
+{
+  "name": "admin-ai",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@10.28.1",
+  "scripts": {
+    "dev": "pnpm -r --parallel --filter @admin-ai/api --filter @admin-ai/web dev",
+    "dev:api": "pnpm --filter @admin-ai/api dev",
+    "dev:web": "pnpm --filter @admin-ai/web dev",
+    "build": "pnpm --filter @admin-ai/api build && pnpm --filter @admin-ai/web build",
+    "lint": "pnpm -r lint",
+    "check": "pnpm -r check"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^7.7.3",
+    "eslint": "^10.0.3",
+    "eslint-plugin-format": "^2.0.1",
+    "eslint-plugin-svelte": "^3.15.2",
+    "typescript": "^5.9.3"
+  }
+}
