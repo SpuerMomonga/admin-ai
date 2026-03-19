@@ -17,4 +17,5 @@ export {
 } from './components/ui/card'
 export { Separator } from './components/ui/separator'
 export { Skeleton } from './components/ui/skeleton'
+export { Tooltip, TooltipProvider } from './components/ui/tooltip'
 export { cn } from './utils'
