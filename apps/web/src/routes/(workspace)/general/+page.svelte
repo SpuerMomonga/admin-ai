@@ -1,8 +1,9 @@
 <script lang='ts'>
-  import type { TaskStatus } from '$lib/stores/app-shell'
+  import type { TaskStatus } from '$lib/stores/tasks'
   import { page } from '$app/state'
   import { Badge } from '$lib/components/ui/badge'
   import { Card } from '$lib/components/ui/card'
+  import { knowledgeBases } from '$lib/stores/conversation'
   import {
     translate as t,
     translateLocaleName,
@@ -11,8 +12,10 @@
     translateRuleResponseStyle,
     translateTaskStatus,
     translateThemePreference,
-  } from '$lib/i18n'
-  import { appShell, knowledgeBases } from '$lib/stores/app-shell'
+  } from '$lib/stores/i18n'
+  import { systemPreferencesStore } from '$lib/stores/preferences'
+  import { settingsStore } from '$lib/stores/settings'
+  import { tasksStore } from '$lib/stores/tasks'
 
   const statusToneClasses: Record<TaskStatus, string> = {
     in_progress: 'border-brand/20 bg-brand/10 text-brand',
@@ -20,21 +23,21 @@
     failed: 'border-amber-500/20 bg-amber-500/10 text-amber-700 dark:text-amber-300',
   }
 
-  const taskId = $derived(page.url.searchParams.get('taskId') ?? $appShell.activeTaskId)
-  const activeTask = $derived($appShell.tasks.find(item => item.id === taskId) ?? null)
+  const taskId = $derived(page.url.searchParams.get('taskId') ?? $tasksStore.activeTaskId)
+  const activeTask = $derived($tasksStore.tasks.find(item => item.id === taskId) ?? null)
   const activeKnowledgeBase = $derived(
     activeTask ? (knowledgeBases.find(base => base.id === activeTask.knowledgeBaseId) ?? null) : null,
   )
   const defaultKnowledgeBase = $derived(
-    knowledgeBases.find(base => base.id === $appShell.settings.knowledge.activeBaseId) ?? null,
+    knowledgeBases.find(base => base.id === $settingsStore.settings.knowledge.activeBaseId) ?? null,
   )
   const taskCounts = $derived.by(() => ({
-    total: $appShell.tasks.length,
-    inProgress: $appShell.tasks.filter(task => task.status === 'in_progress').length,
-    completed: $appShell.tasks.filter(task => task.status === 'completed').length,
-    failed: $appShell.tasks.filter(task => task.status === 'failed').length,
+    total: $tasksStore.tasks.length,
+    inProgress: $tasksStore.tasks.filter(task => task.status === 'in_progress').length,
+    completed: $tasksStore.tasks.filter(task => task.status === 'completed').length,
+    failed: $tasksStore.tasks.filter(task => task.status === 'failed').length,
   }))
-  const recentTasks = $derived.by(() => [...$appShell.tasks]
+  const recentTasks = $derived.by(() => [...$tasksStore.tasks]
     .sort((left, right) => Date.parse(right.updatedAt) - Date.parse(left.updatedAt))
     .slice(0, 4))
   const summaryCards = $derived.by(() => [
@@ -55,13 +58,12 @@
     },
     {
       label: t('dashboard_metric_primary_model'),
-      value: $appShell.settings.models.primaryModel,
+      value: $settingsStore.settings.models.primaryModel,
       description: t('dashboard_metric_primary_model_copy'),
     },
   ])
-
   function formatTimestamp(value: string) {
-    return new Intl.DateTimeFormat($appShell.locale, {
+    return new Intl.DateTimeFormat($systemPreferencesStore.locale, {
       month: 'short',
       day: '2-digit',
       hour: '2-digit',
@@ -137,29 +139,36 @@
 
     <Card size='sm' class='px-4'>
       <p class='shell-card-label'>{t('dashboard_operating_posture_title')}</p>
-      <h3 class='shell-card-title'>{translateRuleApprovalMode($appShell.settings.rules.approvalMode)}</h3>
+      <h3 class='shell-card-title'>{translateRuleApprovalMode($settingsStore.settings.rules.approvalMode)}</h3>
       <p class='shell-card-copy'>{t('dashboard_operating_posture_description')}</p>
 
       <div class='mt-3 grid gap-2'>
         <div class='flex items-center justify-between gap-3 rounded-[8px] border border-shell-border bg-shell-muted-panel px-3 py-2.5 text-sm'>
           <span class='text-muted-foreground'>{t('rules_style_label')}</span>
-          <span class='font-medium text-foreground'>{translateRuleResponseStyle($appShell.settings.rules.responseStyle)}</span>
+          <span class='font-medium text-foreground'>{translateRuleResponseStyle($settingsStore.settings.rules.responseStyle)}</span>
         </div>
 
         <div class='flex items-center justify-between gap-3 rounded-[8px] border border-shell-border bg-shell-muted-panel px-3 py-2.5 text-sm'>
           <span class='text-muted-foreground'>{t('rules_cache_label')}</span>
-          <span class='font-medium text-foreground'>{translateRuleCachePolicy($appShell.settings.rules.cachePolicy)}</span>
+          <span class='font-medium text-foreground'>{translateRuleCachePolicy($settingsStore.settings.rules.cachePolicy)}</span>
         </div>
 
         <div class='flex items-center justify-between gap-3 rounded-[8px] border border-shell-border bg-shell-muted-panel px-3 py-2.5 text-sm'>
           <span class='text-muted-foreground'>{t('theme_label')}</span>
-          <span class='font-medium text-foreground'>{translateThemePreference($appShell.themePreference)}</span>
+          <span class='font-medium text-foreground'>{translateThemePreference($systemPreferencesStore.themePreference)}</span>
         </div>
 
         <div class='flex items-center justify-between gap-3 rounded-[8px] border border-shell-border bg-shell-muted-panel px-3 py-2.5 text-sm'>
           <span class='text-muted-foreground'>{t('locale_label')}</span>
-          <span class='font-medium text-foreground'>{translateLocaleName($appShell.locale)}</span>
+          <span class='font-medium text-foreground'>{translateLocaleName($systemPreferencesStore.locale)}</span>
         </div>
+      </div>
+
+      <div class='mt-3 rounded-[8px] border border-shell-border bg-shell-muted-panel px-3 py-3'>
+        <p class='shell-card-label'>{t('admin_nav_mode_label')}</p>
+        <p class='mt-2 text-sm leading-6 text-muted-foreground'>
+          {$systemPreferencesStore.adminNavigationMode === 'sidebar' ? t('admin_nav_sidebar') : t('admin_nav_topbar')}
+        </p>
       </div>
     </Card>
   </div>

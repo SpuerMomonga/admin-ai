@@ -2,8 +2,8 @@
   import AppSelect from '$lib/components/ui/app-select.svelte'
   import { Card } from '$lib/components/ui/card'
   import { Label } from '$lib/components/ui/label'
-  import { translate as t, translateRuleApprovalMode, translateRuleCachePolicy, translateRuleExecutionPolicy, translateRuleResponseStyle } from '$lib/i18n'
-  import { appShell } from '$lib/stores/app-shell'
+  import { translate as t, translateRuleApprovalMode, translateRuleCachePolicy, translateRuleExecutionPolicy, translateRuleResponseStyle } from '$lib/stores/i18n'
+  import { settingsStore, updateSettingsSection } from '$lib/stores/settings'
 
   const approvalOptions = $derived.by(() => [
     { value: 'guided', label: translateRuleApprovalMode('guided') },
@@ -35,36 +35,36 @@
       <div class='grid gap-2'>
         <Label>{t('rules_approval_label')}</Label>
         <AppSelect
-          value={$appShell.settings.rules.approvalMode}
+          value={$settingsStore.settings.rules.approvalMode}
           options={approvalOptions}
-          onValueChange={value => appShell.updateSettingsSection('rules', { approvalMode: value as 'manual' | 'guided' })}
+          onValueChange={value => updateSettingsSection('rules', { approvalMode: value as 'manual' | 'guided' })}
         />
       </div>
 
       <div class='grid gap-2'>
         <Label>{t('rules_style_label')}</Label>
         <AppSelect
-          value={$appShell.settings.rules.responseStyle}
+          value={$settingsStore.settings.rules.responseStyle}
           options={styleOptions}
-          onValueChange={value => appShell.updateSettingsSection('rules', { responseStyle: value as 'compact' | 'structured' })}
+          onValueChange={value => updateSettingsSection('rules', { responseStyle: value as 'compact' | 'structured' })}
         />
       </div>
 
       <div class='grid gap-2'>
         <Label>{t('rules_cache_label')}</Label>
         <AppSelect
-          value={$appShell.settings.rules.cachePolicy}
+          value={$settingsStore.settings.rules.cachePolicy}
           options={cacheOptions}
-          onValueChange={value => appShell.updateSettingsSection('rules', { cachePolicy: value as 'session_and_reload' | 'session_only' })}
+          onValueChange={value => updateSettingsSection('rules', { cachePolicy: value as 'session_and_reload' | 'session_only' })}
         />
       </div>
 
       <div class='grid gap-2'>
         <Label>{t('rules_execution_label')}</Label>
         <AppSelect
-          value={$appShell.settings.rules.executionPolicy}
+          value={$settingsStore.settings.rules.executionPolicy}
           options={executionOptions}
-          onValueChange={value => appShell.updateSettingsSection('rules', { executionPolicy: value as 'safe_first' | 'balanced' })}
+          onValueChange={value => updateSettingsSection('rules', { executionPolicy: value as 'safe_first' | 'balanced' })}
         />
       </div>
     </div>

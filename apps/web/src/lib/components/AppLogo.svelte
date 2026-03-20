@@ -1,5 +1,5 @@
 <script lang='ts'>
-  import { translate as t } from '$lib/i18n'
+  import { translate as t } from '$lib/stores/i18n'
 
   const {
     collapsed = false,

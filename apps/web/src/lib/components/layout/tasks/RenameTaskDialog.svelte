@@ -3,7 +3,7 @@
   import * as Dialog from '$lib/components/ui/dialog'
   import { Input } from '$lib/components/ui/input'
   import { Label } from '$lib/components/ui/label'
-  import { translate as t } from '$lib/i18n'
+  import { translate as t } from '$lib/stores/i18n'
   import { tick } from 'svelte'
 
   let {

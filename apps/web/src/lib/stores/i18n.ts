@@ -5,7 +5,7 @@ import { getLocale, getTextDirection, setLocale } from '$lib/paraglide/runtime.j
 
 export type AppLocale = typeof locales[number]
 
-type AdminPanelLabel = 'general' | 'account' | 'models' | 'knowledge' | 'rules'
+type AdminPanelLabel = 'general' | 'preferences' | 'account' | 'models' | 'knowledge' | 'rules'
 type TaskStatusLabel = 'in_progress' | 'completed' | 'failed'
 type ThemeLabel = 'system' | 'light' | 'dark'
 type RuleApprovalMode = 'guided' | 'manual'
@@ -23,15 +23,41 @@ const textMessages = {
   account_role_label: m.account_role_label,
   account_title: m.account_title,
   active_mode: m.active_mode,
+  admin_group_intelligence: m.admin_group_intelligence,
+  admin_group_knowledge: m.admin_group_knowledge,
+  admin_group_overview: m.admin_group_overview,
+  admin_group_policies: m.admin_group_policies,
+  admin_group_workspace: m.admin_group_workspace,
   admin_label: m.admin_label,
+  admin_nav_sidebar: m.admin_nav_sidebar,
+  admin_nav_mode_description: m.admin_nav_mode_description,
+  admin_nav_mode_label: m.admin_nav_mode_label,
+  admin_nav_topbar: m.admin_nav_topbar,
+  admin_page_refresh: m.admin_page_refresh,
+  admin_split_badge: m.admin_split_badge,
+  admin_split_focus: m.admin_split_focus,
+  admin_split_primary: m.admin_split_primary,
+  admin_split_secondary: m.admin_split_secondary,
+  admin_tab_close: m.admin_tab_close,
+  admin_tab_close_left: m.admin_tab_close_left,
+  admin_tab_close_others: m.admin_tab_close_others,
+  admin_tab_close_right: m.admin_tab_close_right,
+  admin_tab_maximize: m.admin_tab_maximize,
+  admin_tab_pin: m.admin_tab_pin,
+  admin_tab_restore: m.admin_tab_restore,
+  admin_tab_split: m.admin_tab_split,
+  admin_tab_unpin: m.admin_tab_unpin,
+  admin_tab_unsplit: m.admin_tab_unsplit,
+  admin_unknown_route: m.admin_unknown_route,
+  admin_unknown_route_description: m.admin_unknown_route_description,
   app_logo_subtitle: m.app_logo_subtitle,
   app_subtitle: m.app_subtitle,
+  cancel: m.cancel,
   collapse_left: m.collapse_left,
   collapse_right: m.collapse_right,
   composer_placeholder: m.composer_placeholder,
   conversation_mode: m.conversation_mode,
   copy_message: m.copy_message,
-  cancel: m.cancel,
   dashboard_active_task_title: m.dashboard_active_task_title,
   dashboard_description: m.dashboard_description,
   dashboard_last_updated_label: m.dashboard_last_updated_label,
@@ -90,6 +116,7 @@ const textMessages = {
   panel_general: m.panel_general,
   panel_knowledge: m.panel_knowledge,
   panel_models: m.panel_models,
+  panel_preferences: m.panel_preferences,
   panel_rules: m.panel_rules,
   password_label: m.password_label,
   password_placeholder: m.password_placeholder,
@@ -148,6 +175,7 @@ export type TranslationKey = keyof typeof textMessages
 
 const adminPanelMessageKeys = {
   general: 'panel_general',
+  preferences: 'panel_preferences',
   account: 'panel_account',
   models: 'panel_models',
   knowledge: 'panel_knowledge',

@@ -6,8 +6,9 @@
   import { Checkbox } from '$lib/components/ui/checkbox'
   import { Input } from '$lib/components/ui/input'
   import { Label } from '$lib/components/ui/label'
-  import { translate as t } from '$lib/i18n'
-  import { appShell, buildWorkspacePath } from '$lib/stores/app-shell'
+  import { buildWorkspacePath } from '$lib/stores/admin-tabs'
+  import { translate as t } from '$lib/stores/i18n'
+  import { getSessionSnapshot, hydrateSession, login } from '$lib/stores/session'
   import { LockKeyhole, Sparkles } from '@lucide/svelte'
   import { onMount } from 'svelte'
 
@@ -16,20 +17,20 @@
   let rememberMe = $state(true)
 
   onMount(async () => {
-    appShell.hydrate()
+    hydrateSession()
 
-    const snapshot = appShell.getSnapshot()
+    const snapshot = getSessionSnapshot()
 
     if (snapshot.isLoggedIn) {
-      await goto(buildWorkspacePath(snapshot.activeTaskId, snapshot.activePanel), { replaceState: true })
+      await goto(buildWorkspacePath(snapshot.activeTaskId, snapshot.activeAdminPath), { replaceState: true })
     }
   })
 
   async function submit() {
-    appShell.login(account)
+    login(account)
 
-    const snapshot = appShell.getSnapshot()
-    await goto(buildWorkspacePath(snapshot.activeTaskId, snapshot.activePanel))
+    const snapshot = getSessionSnapshot()
+    await goto(buildWorkspacePath(snapshot.activeTaskId, snapshot.activeAdminPath))
   }
 </script>
 

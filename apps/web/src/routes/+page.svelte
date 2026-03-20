@@ -1,20 +1,21 @@
 <script lang='ts'>
   import { goto } from '$app/navigation'
-  import { translate as t } from '$lib/i18n'
-  import { appShell, buildWorkspacePath } from '$lib/stores/app-shell'
+  import { buildWorkspacePath } from '$lib/stores/admin-tabs'
+  import { translate as t } from '$lib/stores/i18n'
+  import { getSessionSnapshot, hydrateSession } from '$lib/stores/session'
   import { onMount } from 'svelte'
 
   onMount(async () => {
-    appShell.hydrate()
+    hydrateSession()
 
-    const snapshot = appShell.getSnapshot()
+    const snapshot = getSessionSnapshot()
 
     if (!snapshot.isLoggedIn) {
       await goto('/login', { replaceState: true })
       return
     }
 
-    await goto(buildWorkspacePath(snapshot.activeTaskId, snapshot.activePanel), { replaceState: true })
+    await goto(buildWorkspacePath(snapshot.activeTaskId, snapshot.activeAdminPath), { replaceState: true })
   })
 </script>
 

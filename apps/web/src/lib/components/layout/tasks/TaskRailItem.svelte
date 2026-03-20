@@ -1,7 +1,7 @@
 <script lang='ts'>
-  import type { TaskRecord, TaskStatus } from '$lib/stores/app-shell'
+  import type { TaskRecord, TaskStatus } from '$lib/stores/tasks'
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu'
-  import { translate as t, translateTaskStatus } from '$lib/i18n'
+  import { translate as t, translateTaskStatus } from '$lib/stores/i18n'
   import { Ellipsis, PencilLine, Trash2 } from '@lucide/svelte'
 
   const {

@@ -4,8 +4,9 @@
   import { Card } from '$lib/components/ui/card'
   import { Input } from '$lib/components/ui/input'
   import { Label } from '$lib/components/ui/label'
-  import { translate as t } from '$lib/i18n'
-  import { appShell, knowledgeBases } from '$lib/stores/app-shell'
+  import { knowledgeBases } from '$lib/stores/conversation'
+  import { translate as t } from '$lib/stores/i18n'
+  import { settingsStore, updateSettingsSection } from '$lib/stores/settings'
 
   const knowledgeBaseOptions = $derived.by(() => knowledgeBases.map(knowledgeBase => ({
     value: knowledgeBase.id,
@@ -20,7 +21,7 @@
 <section class='grid gap-3'>
   <Card size='sm' class='px-4'>
     <p class='shell-card-label'>{t('knowledge_title')}</p>
-    <h3 class='shell-card-title'>{knowledgeBases.find(base => base.id === $appShell.settings.knowledge.activeBaseId)?.badge ?? 'OPS'}</h3>
+    <h3 class='shell-card-title'>{knowledgeBases.find(base => base.id === $settingsStore.settings.knowledge.activeBaseId)?.badge ?? 'OPS'}</h3>
     <p class='shell-card-copy'>{t('knowledge_description')}</p>
   </Card>
 
@@ -29,18 +30,18 @@
       <div class='grid gap-2'>
         <Label>{t('knowledge_default_label')}</Label>
         <AppSelect
-          value={$appShell.settings.knowledge.activeBaseId}
+          value={$settingsStore.settings.knowledge.activeBaseId}
           options={knowledgeBaseOptions}
-          onValueChange={value => appShell.updateSettingsSection('knowledge', { activeBaseId: value })}
+          onValueChange={value => updateSettingsSection('knowledge', { activeBaseId: value })}
         />
       </div>
 
       <div class='grid gap-2'>
         <Label>{t('knowledge_scope_label')}</Label>
         <AppSelect
-          value={$appShell.settings.knowledge.queryScope}
+          value={$settingsStore.settings.knowledge.queryScope}
           options={queryScopeOptions}
-          onValueChange={value => appShell.updateSettingsSection('knowledge', { queryScope: value as 'current' | 'global' })}
+          onValueChange={value => updateSettingsSection('knowledge', { queryScope: value as 'current' | 'global' })}
         />
       </div>
 
@@ -48,8 +49,8 @@
         <Label for='knowledge-query'>{t('knowledge_search_label')}</Label>
         <Input
           id='knowledge-query'
-          value={$appShell.settings.knowledge.searchQuery}
-          oninput={event => appShell.updateSettingsSection('knowledge', { searchQuery: event.currentTarget.value })}
+          value={$settingsStore.settings.knowledge.searchQuery}
+          oninput={event => updateSettingsSection('knowledge', { searchQuery: event.currentTarget.value })}
         />
       </div>
     </div>
@@ -58,9 +59,9 @@
       {#each knowledgeBases as knowledgeBase}
         <Button
           type='button'
-          variant={$appShell.settings.knowledge.activeBaseId === knowledgeBase.id ? 'secondary' : 'outline'}
-          class={`h-auto justify-start rounded-[8px] px-3 py-3 text-left ${$appShell.settings.knowledge.activeBaseId === knowledgeBase.id ? 'border-brand/35 bg-brand/10 text-brand shadow-[0_8px_18px_rgba(0,78,162,0.1)]' : ''}`}
-          onclick={() => appShell.updateSettingsSection('knowledge', { activeBaseId: knowledgeBase.id })}
+          variant={$settingsStore.settings.knowledge.activeBaseId === knowledgeBase.id ? 'secondary' : 'outline'}
+          class={`h-auto justify-start rounded-[8px] px-3 py-3 text-left ${$settingsStore.settings.knowledge.activeBaseId === knowledgeBase.id ? 'border-brand/35 bg-brand/10 text-brand shadow-[0_8px_18px_rgba(0,78,162,0.1)]' : ''}`}
+          onclick={() => updateSettingsSection('knowledge', { activeBaseId: knowledgeBase.id })}
         >
           <div>
             <p class='text-sm font-semibold text-foreground'>{knowledgeBase.badge}</p>

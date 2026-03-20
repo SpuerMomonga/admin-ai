@@ -1,17 +1,19 @@
 <script lang='ts'>
-  import type { AdminPanel } from '$lib/stores/app-shell'
   import { browser } from '$app/environment'
   import { goto } from '$app/navigation'
   import { Button } from '$lib/components/ui/button'
   import TooltipButton from '$lib/components/ui/tooltip-button.svelte'
-  import { translate as t } from '$lib/i18n'
-  import { appShell, buildWorkspacePath } from '$lib/stores/app-shell'
+  import { buildWorkspacePath } from '$lib/stores/admin-tabs'
+  import { setMessageFeedback, setTaskDraft, submitTaskDraft } from '$lib/stores/conversation'
+  import { translate as t } from '$lib/stores/i18n'
+  import { systemPreferencesStore } from '$lib/stores/preferences'
+  import { createTask, tasksStore } from '$lib/stores/tasks'
   import { Check, Copy, ThumbsDown, ThumbsUp } from '@lucide/svelte'
 
-  const { taskId, panel } = $props<{ taskId: string | null, panel: AdminPanel }>()
+  const { taskId, adminPath } = $props<{ taskId: string | null, adminPath: string }>()
   let copiedMessageId = $state<string | null>(null)
 
-  const activeTask = $derived($appShell.tasks.find(task => task.id === taskId) ?? null)
+  const activeTask = $derived($tasksStore.tasks.find(task => task.id === taskId) ?? null)
   const starterSuggestions = [
     t('workspace_empty_prompt_one'),
     t('workspace_empty_prompt_two'),
@@ -19,7 +21,7 @@
   ]
 
   function formatTime(value: string) {
-    return new Intl.DateTimeFormat($appShell.locale, {
+    return new Intl.DateTimeFormat($systemPreferencesStore.locale, {
       hour: '2-digit',
       minute: '2-digit',
       month: '2-digit',
@@ -53,10 +55,10 @@
       return
     }
 
-    const nextTaskId = appShell.createTask()
-    appShell.setTaskDraft(nextTaskId, nextPrompt)
-    appShell.submitTaskDraft(nextTaskId)
-    await goto(buildWorkspacePath(nextTaskId, panel))
+    const nextTaskId = createTask()
+    setTaskDraft(nextTaskId, nextPrompt)
+    submitTaskDraft(nextTaskId)
+    await goto(buildWorkspacePath(nextTaskId, adminPath))
   }
 </script>
 
@@ -84,7 +86,7 @@
                 <TooltipButton
                   content={t('upvote_message')}
                   class={`inline-flex size-6 items-center justify-center rounded-[6px] text-muted-foreground transition hover:bg-shell-muted-panel hover:text-foreground ${message.feedback === 'up' ? 'text-brand' : ''}`}
-                  onclick={() => taskId && appShell.setMessageFeedback(taskId, message.id, 'up')}
+                  onclick={() => taskId && setMessageFeedback(taskId, message.id, 'up')}
                 >
                   <ThumbsUp class='size-3.5' />
                 </TooltipButton>
@@ -92,7 +94,7 @@
                 <TooltipButton
                   content={t('downvote_message')}
                   class={`inline-flex size-6 items-center justify-center rounded-[6px] text-muted-foreground transition hover:bg-shell-muted-panel hover:text-foreground ${message.feedback === 'down' ? 'text-brand' : ''}`}
-                  onclick={() => taskId && appShell.setMessageFeedback(taskId, message.id, 'down')}
+                  onclick={() => taskId && setMessageFeedback(taskId, message.id, 'down')}
                 >
                   <ThumbsDown class='size-3.5' />
                 </TooltipButton>

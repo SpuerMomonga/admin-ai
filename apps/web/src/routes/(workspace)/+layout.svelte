@@ -1,5 +1,4 @@
 <script lang='ts'>
-  import type { AdminPanel } from '$lib/stores/app-shell'
   import { browser } from '$app/environment'
   import { goto } from '$app/navigation'
   import { page } from '$app/state'
@@ -7,10 +6,11 @@
   import ChatColumn from '$lib/components/layout/ChatColumn.svelte'
   import ColumnResizeHandle from '$lib/components/layout/ColumnResizeHandle.svelte'
   import TaskRail from '$lib/components/layout/TaskRail.svelte'
-  import { translate as t } from '$lib/i18n'
-  import { appShell, resolveAdminPanelFromPathname } from '$lib/stores/app-shell'
+  import { activateRoute, adminTabsStore, openAdminPath, resolveAdminPathFromPathname } from '$lib/stores/admin-tabs'
+  import { translate as t } from '$lib/stores/i18n'
+  import { getNavigationSnapshot, navigationStore, setColumnWidth, setLeftCollapsed, setRightCollapsed } from '$lib/stores/navigation'
+  import { sessionStore } from '$lib/stores/session'
 
-  const { children } = $props()
   let containerElement = $state<HTMLElement | null>(null)
   let containerWidth = $state(0)
 
@@ -20,29 +20,27 @@
   const desktopHandleWidth = 12
 
   const taskId = $derived(page.url.searchParams.get('taskId'))
-  const panel = $derived(
-    resolveAdminPanelFromPathname(page.url.pathname)
-      ? resolveAdminPanelFromPathname(page.url.pathname)
-      : $appShell.activePanel,
+  const adminPath = $derived(
+    resolveAdminPathFromPathname(page.url.pathname) ?? $adminTabsStore.activeAdminPath,
   )
 
   $effect(() => {
-    if (browser && !$appShell.isLoggedIn) {
+    if (browser && !$sessionStore.isLoggedIn) {
       void goto('/login', { replaceState: true })
     }
   })
 
   $effect(() => {
     const nextTaskId = page.url.searchParams.get('taskId')
-    const nextPanel = resolveAdminPanelFromPathname(page.url.pathname)
+    const nextAdminPath = resolveAdminPathFromPathname(page.url.pathname)
 
-    if (nextTaskId && nextPanel) {
-      appShell.activateRoute(nextTaskId, nextPanel)
+    if (nextTaskId && nextAdminPath) {
+      activateRoute(nextTaskId, nextAdminPath)
       return
     }
 
-    if (nextPanel) {
-      appShell.openPanel(nextPanel)
+    if (nextAdminPath) {
+      openAdminPath(nextAdminPath)
     }
   })
 
@@ -51,24 +49,24 @@
   }
 
   const workspaceMeasured = $derived(containerWidth > 0)
-  const visibleHandleCount = $derived(Number(!$appShell.leftCollapsed) + Number(!$appShell.rightCollapsed))
+  const visibleHandleCount = $derived(Number(!$navigationStore.leftCollapsed) + Number(!$navigationStore.rightCollapsed))
   const usableWidth = $derived(Math.max(containerWidth - desktopHandleWidth * visibleHandleCount, 0))
   const leftPaneWidth = $derived.by(() => {
-    if ($appShell.leftCollapsed) {
+    if ($navigationStore.leftCollapsed) {
       return 0
     }
 
-    const maxLeft = Math.min(420, usableWidth - ($appShell.rightCollapsed ? 0 : $appShell.columnWidths.right) - desktopMinMiddleWidth)
-    return clamp($appShell.columnWidths.left, 180, Math.max(180, maxLeft))
+    const maxLeft = Math.min(420, usableWidth - ($navigationStore.rightCollapsed ? 0 : $navigationStore.columnWidths.right) - desktopMinMiddleWidth)
+    return clamp($navigationStore.columnWidths.left, 180, Math.max(180, maxLeft))
   })
   const rightPaneWidth = $derived.by(() => {
-    if ($appShell.rightCollapsed) {
+    if ($navigationStore.rightCollapsed) {
       return 0
     }
 
-    const leftWidth = $appShell.leftCollapsed ? 0 : leftPaneWidth
+    const leftWidth = $navigationStore.leftCollapsed ? 0 : leftPaneWidth
     const maxRight = Math.min(usableWidth * 0.8, usableWidth - leftWidth - desktopMinMiddleWidth)
-    return clamp($appShell.columnWidths.right, 280, Math.max(280, maxRight))
+    return clamp($navigationStore.columnWidths.right, 280, Math.max(280, maxRight))
   })
 
   function beginResize(side: 'left' | 'right', event: PointerEvent) {
@@ -79,7 +77,7 @@
     event.preventDefault()
 
     const startX = event.clientX
-    const snapshot = appShell.getSnapshot()
+    const snapshot = getNavigationSnapshot()
     const { columnWidths } = snapshot
     const startLeft = columnWidths.left
     const startRight = columnWidths.right
@@ -93,34 +91,34 @@
         const attemptedLeftWidth = startLeft + delta
 
         if (attemptedLeftWidth < minDesktopLeftWidth) {
-          appShell.setLeftCollapsed(true)
+          setLeftCollapsed(true)
           return
         }
 
         const maxLeft = Math.min(420, totalWidth - startRight - desktopMinMiddleWidth)
-        appShell.setLeftCollapsed(false)
-        appShell.setColumnWidth('left', clamp(attemptedLeftWidth, minDesktopLeftWidth, maxLeft))
+        setLeftCollapsed(false)
+        setColumnWidth('left', clamp(attemptedLeftWidth, minDesktopLeftWidth, maxLeft))
         return
       }
 
-      const currentLeftWidth = appShell.getSnapshot().leftCollapsed ? 0 : startLeft
+      const currentLeftWidth = getNavigationSnapshot().leftCollapsed ? 0 : startLeft
       const maxRight = Math.min(totalWidth * 0.8, totalWidth - currentLeftWidth - desktopMinMiddleWidth)
       const attemptedRightWidth = startRight - delta
 
       if (attemptedRightWidth < minDesktopRightWidth) {
-        appShell.setRightCollapsed(true)
+        setRightCollapsed(true)
         return
       }
 
-      appShell.setRightCollapsed(false)
+      setRightCollapsed(false)
       const nextRightWidth = clamp(attemptedRightWidth, minDesktopRightWidth, maxRight)
 
-      appShell.setColumnWidth('right', nextRightWidth)
+      setColumnWidth('right', nextRightWidth)
 
       const isExpandingRightPane = delta < 0
 
-      if (isExpandingRightPane && !appShell.getSnapshot().leftCollapsed && nextRightWidth / totalWidth > 0.5) {
-        appShell.setLeftCollapsed(true)
+      if (isExpandingRightPane && !getNavigationSnapshot().leftCollapsed && nextRightWidth / totalWidth > 0.5) {
+        setLeftCollapsed(true)
       }
     }
 
@@ -141,12 +139,12 @@
   aria-busy={!workspaceMeasured}
 >
   <div class={`flex h-full w-full overflow-hidden ${workspaceMeasured ? '' : 'invisible'}`}>
-    {#if !$appShell.leftCollapsed}
+    {#if !$navigationStore.leftCollapsed}
       <div
         class='h-full min-h-0 shrink-0 overflow-hidden'
         style={`width:${leftPaneWidth}px;`}
       >
-        <TaskRail taskId={taskId} panel={panel as AdminPanel} />
+        <TaskRail taskId={taskId} adminPath={adminPath} />
       </div>
 
       <ColumnResizeHandle
@@ -156,10 +154,10 @@
     {/if}
 
     <div class='h-full min-h-0 min-w-0 flex-1 overflow-hidden'>
-      <ChatColumn taskId={taskId} panel={panel as AdminPanel} />
+      <ChatColumn taskId={taskId} adminPath={adminPath} />
     </div>
 
-    {#if !$appShell.rightCollapsed}
+    {#if !$navigationStore.rightCollapsed}
       <ColumnResizeHandle
         title='Resize admin panel'
         onpointerdown={event => beginResize('right', event)}
@@ -169,9 +167,7 @@
         class='h-full min-h-0 shrink-0 overflow-hidden'
         style={`width:${rightPaneWidth}px;`}
       >
-        <AdminColumn taskId={taskId} panel={panel as AdminPanel}>
-          {@render children()}
-        </AdminColumn>
+        <AdminColumn taskId={taskId} adminPath={adminPath} />
       </div>
     {/if}
   </div>
