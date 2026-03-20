@@ -1,4 +1,5 @@
-import { paraglideVitePlugin, type CompilerOptions } from '@inlang/paraglide-js'
+import type { CompilerOptions } from '@inlang/paraglide-js'
+import { paraglideVitePlugin } from '@inlang/paraglide-js'
 import { sveltekit } from '@sveltejs/kit/vite'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'vite'

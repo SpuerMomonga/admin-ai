@@ -1,9 +1,9 @@
 <script lang='ts'>
-  import { onMount } from 'svelte'
   import favicon from '$lib/assets/favicon.svg'
   import { appShell } from '$lib/stores/app-shell'
-  import { TooltipProvider } from '@admin-ai/ui'
   import { applyDocumentTheme, watchSystemTheme } from '$lib/theme'
+  import { TooltipProvider } from '@admin-ai/ui'
+  import { onMount } from 'svelte'
   import '@admin-ai/ui/styles.css'
   import './layout.css'
 

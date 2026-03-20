@@ -1,13 +1,14 @@
 <script lang='ts'>
-  import { Tooltip } from '@admin-ai/ui'
-  import AppLogo from '$lib/components/AppLogo.svelte'
+  import type { AdminPanel } from '$lib/stores/app-shell'
   import { goto } from '$app/navigation'
+  import AppLogo from '$lib/components/AppLogo.svelte'
   import { translate as t } from '$lib/i18n'
-  import { appShell, buildWorkspacePath, type AdminPanel } from '$lib/stores/app-shell'
-  import WorkspaceUserMenu from './WorkspaceUserMenu.svelte'
+  import { appShell, buildWorkspacePath } from '$lib/stores/app-shell'
+  import { Tooltip } from '@admin-ai/ui'
   import { MessageCirclePlus, PanelLeftOpen, PanelRightOpen } from '@lucide/svelte'
+  import WorkspaceUserMenu from './WorkspaceUserMenu.svelte'
 
-  let { taskId, panel } = $props<{ taskId: string | null, panel: AdminPanel }>()
+  const { taskId, panel } = $props<{ taskId: string | null, panel: AdminPanel }>()
 
   const activeTask = $derived($appShell.tasks.find(task => task.id === taskId) ?? null)
 

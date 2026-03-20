@@ -1,12 +1,13 @@
 <script lang='ts'>
+  import type { AdminPanel } from '$lib/stores/app-shell'
   import { browser } from '$app/environment'
   import { goto } from '$app/navigation'
-  import { onMount } from 'svelte'
-  import { translate as t, localeOptions } from '$lib/i18n'
-  import { appShell, buildWorkspacePath, type AdminPanel } from '$lib/stores/app-shell'
+  import { localeOptions, translate as t } from '$lib/i18n'
+  import { appShell, buildWorkspacePath } from '$lib/stores/app-shell'
   import { Globe2, LogOut, MoonStar, Settings2, SunMedium, UserCircle2 } from '@lucide/svelte'
+  import { onMount } from 'svelte'
 
-  let { taskId, panel } = $props<{ taskId: string | null, panel: AdminPanel }>()
+  const { taskId } = $props<{ taskId: string | null, panel: AdminPanel }>()
 
   let menuElement = $state<HTMLDivElement | null>(null)
   let open = $state(false)

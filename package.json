@@ -9,6 +9,7 @@
     "dev:web": "pnpm --filter @admin-ai/web dev",
     "build": "pnpm --filter @admin-ai/api build && pnpm --filter @admin-ai/web build",
     "lint": "pnpm -r lint",
+    "lint:fix": "eslint . --fix",
     "check": "pnpm -r check"
   },
   "devDependencies": {

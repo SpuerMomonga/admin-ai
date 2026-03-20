@@ -1,10 +1,11 @@
 <script lang='ts'>
+  import type { AdminPanel, ChatMode } from '$lib/stores/app-shell'
   import { goto } from '$app/navigation'
   import { translate as t } from '$lib/i18n'
-  import { appShell, buildWorkspacePath, knowledgeBases, type AdminPanel, type ChatMode } from '$lib/stores/app-shell'
+  import { appShell, buildWorkspacePath, knowledgeBases } from '$lib/stores/app-shell'
   import { SendHorizontal } from '@lucide/svelte'
 
-  let { taskId, panel } = $props<{ taskId: string | null, panel: AdminPanel }>()
+  const { taskId, panel } = $props<{ taskId: string | null, panel: AdminPanel }>()
   let starterPrompt = $state('')
   let starterMode = $state<ChatMode>('conversation')
   let starterKnowledgeBaseId = $state<string>(knowledgeBases[0]?.id ?? 'ops-playbook')
@@ -48,7 +49,7 @@
         value={activeTask.draft}
         placeholder={t('composer_placeholder')}
         onkeydown={handleKeydown}
-        oninput={(event) => taskId && appShell.setTaskDraft(taskId, event.currentTarget.value)}
+        oninput={event => taskId && appShell.setTaskDraft(taskId, event.currentTarget.value)}
       ></textarea>
 
       <div class='mt-3 flex items-center justify-between gap-3'>
@@ -57,7 +58,7 @@
             class='h-7 appearance-none rounded-[6px] border-0 bg-transparent px-2 py-1 text-[11px] font-medium text-muted-foreground outline-none transition hover:bg-shell-muted-panel hover:text-foreground focus:bg-shell-muted-panel focus:text-foreground'
             value={activeTask.mode}
             aria-label={t('active_mode')}
-            onchange={(event) => taskId && appShell.setTaskMode(taskId, event.currentTarget.value as ChatMode)}
+            onchange={event => taskId && appShell.setTaskMode(taskId, event.currentTarget.value as ChatMode)}
           >
             <option value='conversation'>{t('conversation_mode')}</option>
             <option value='operation'>{t('operation_mode')}</option>
@@ -67,7 +68,7 @@
             class='h-7 appearance-none rounded-[6px] border-0 bg-transparent px-2 py-1 text-[11px] font-medium text-muted-foreground outline-none transition hover:bg-shell-muted-panel hover:text-foreground focus:bg-shell-muted-panel focus:text-foreground'
             value={activeTask.knowledgeBaseId}
             aria-label={t('knowledge_base_label')}
-            onchange={(event) => taskId && appShell.setTaskKnowledgeBase(taskId, event.currentTarget.value)}
+            onchange={event => taskId && appShell.setTaskKnowledgeBase(taskId, event.currentTarget.value)}
           >
             {#each knowledgeBases as knowledgeBase}
               <option value={knowledgeBase.id}>{knowledgeBase.badge}</option>
@@ -96,7 +97,7 @@
         value={starterPrompt}
         placeholder={t('composer_placeholder')}
         onkeydown={handleKeydown}
-        oninput={(event) => starterPrompt = event.currentTarget.value}
+        oninput={event => starterPrompt = event.currentTarget.value}
       ></textarea>
 
       <div class='mt-3 flex items-center justify-between gap-3'>
@@ -105,7 +106,7 @@
             class='h-7 appearance-none rounded-[6px] border-0 bg-transparent px-2 py-1 text-[11px] font-medium text-muted-foreground outline-none transition hover:bg-shell-muted-panel hover:text-foreground focus:bg-shell-muted-panel focus:text-foreground'
             value={starterMode}
             aria-label={t('active_mode')}
-            onchange={(event) => starterMode = event.currentTarget.value as ChatMode}
+            onchange={event => starterMode = event.currentTarget.value as ChatMode}
           >
             <option value='conversation'>{t('conversation_mode')}</option>
             <option value='operation'>{t('operation_mode')}</option>
@@ -115,7 +116,7 @@
             class='h-7 appearance-none rounded-[6px] border-0 bg-transparent px-2 py-1 text-[11px] font-medium text-muted-foreground outline-none transition hover:bg-shell-muted-panel hover:text-foreground focus:bg-shell-muted-panel focus:text-foreground'
             value={starterKnowledgeBaseId}
             aria-label={t('knowledge_base_label')}
-            onchange={(event) => starterKnowledgeBaseId = event.currentTarget.value}
+            onchange={event => starterKnowledgeBaseId = event.currentTarget.value}
           >
             {#each knowledgeBases as knowledgeBase}
               <option value={knowledgeBase.id}>{knowledgeBase.badge}</option>

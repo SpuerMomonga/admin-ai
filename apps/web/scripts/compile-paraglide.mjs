@@ -1,3 +1,4 @@
+import process from 'node:process'
 import { compile } from '@inlang/paraglide-js'
 
 const mode = process.env.NODE_ENV === 'development' ? 'development' : 'production'

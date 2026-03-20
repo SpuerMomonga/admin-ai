@@ -1,10 +1,10 @@
 <script lang='ts'>
   import { goto } from '$app/navigation'
-  import { onMount } from 'svelte'
   import AppLogo from '$lib/components/AppLogo.svelte'
   import { translate as t } from '$lib/i18n'
   import { appShell, buildWorkspacePath } from '$lib/stores/app-shell'
   import { LockKeyhole, Sparkles } from '@lucide/svelte'
+  import { onMount } from 'svelte'
 
   let account = $state('')
   let password = $state('')

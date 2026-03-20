@@ -17,7 +17,7 @@
         <input
           class='shell-input'
           value={$appShell.settings.account.displayName}
-          oninput={(event) => appShell.updateSettingsSection('account', { displayName: event.currentTarget.value })}
+          oninput={event => appShell.updateSettingsSection('account', { displayName: event.currentTarget.value })}
         />
       </label>
 
@@ -26,7 +26,7 @@
         <input
           class='shell-input'
           value={$appShell.settings.account.email}
-          oninput={(event) => appShell.updateSettingsSection('account', { email: event.currentTarget.value })}
+          oninput={event => appShell.updateSettingsSection('account', { email: event.currentTarget.value })}
         />
       </label>
 
@@ -35,7 +35,7 @@
         <input
           class='shell-input'
           value={$appShell.settings.account.role}
-          oninput={(event) => appShell.updateSettingsSection('account', { role: event.currentTarget.value })}
+          oninput={event => appShell.updateSettingsSection('account', { role: event.currentTarget.value })}
         />
       </label>
     </div>

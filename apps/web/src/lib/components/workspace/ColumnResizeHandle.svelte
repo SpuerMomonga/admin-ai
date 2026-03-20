@@ -1,5 +1,5 @@
 <script lang='ts'>
-  let { title, onpointerdown } = $props<{ title: string, onpointerdown: (event: PointerEvent) => void }>()
+  const { title, onpointerdown } = $props<{ title: string, onpointerdown: (event: PointerEvent) => void }>()
 </script>
 
 <button

@@ -3,11 +3,11 @@
   import { browser } from '$app/environment'
   import { goto } from '$app/navigation'
   import { page } from '$app/state'
-  import { translate as t } from '$lib/i18n'
   import AdminColumn from '$lib/components/workspace/AdminColumn.svelte'
   import ChatColumn from '$lib/components/workspace/ChatColumn.svelte'
   import ColumnResizeHandle from '$lib/components/workspace/ColumnResizeHandle.svelte'
   import TaskRail from '$lib/components/workspace/TaskRail.svelte'
+  import { translate as t } from '$lib/i18n'
   import { appShell, resolveAdminPanelFromPathname } from '$lib/stores/app-shell'
 
   const { children } = $props()

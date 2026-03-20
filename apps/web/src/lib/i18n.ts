@@ -1,6 +1,7 @@
+import type { locales } from '$lib/paraglide/runtime.js'
 import { browser } from '$app/environment'
 import { m } from '$lib/paraglide/messages.js'
-import { getLocale, getTextDirection, locales, setLocale } from '$lib/paraglide/runtime.js'
+import { getLocale, getTextDirection, setLocale } from '$lib/paraglide/runtime.js'
 
 export type AppLocale = typeof locales[number]
 

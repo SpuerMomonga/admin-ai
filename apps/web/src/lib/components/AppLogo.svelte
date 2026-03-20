@@ -1,7 +1,7 @@
 <script lang='ts'>
   import { translate as t } from '$lib/i18n'
 
-  let {
+  const {
     collapsed = false,
     showSubtitle = true,
   } = $props<{ collapsed?: boolean, showSubtitle?: boolean }>()

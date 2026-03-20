@@ -1,7 +1,8 @@
 <script lang='ts'>
+  import type { TaskStatus } from '$lib/stores/app-shell'
   import { page } from '$app/state'
   import { translate as t, translateLocaleName, translateRuleCachePolicy, translateTaskStatus, translateThemePreference } from '$lib/i18n'
-  import { appShell, type TaskStatus } from '$lib/stores/app-shell'
+  import { appShell } from '$lib/stores/app-shell'
 
   const taskId = $derived(page.url.searchParams.get('taskId') ?? $appShell.activeTaskId)
   const task = $derived($appShell.tasks.find(item => item.id === taskId) ?? null)
@@ -33,7 +34,7 @@
     <div class='grid gap-3 lg:grid-cols-2'>
       <label class='shell-field'>
         <span>{t('theme_label')}</span>
-        <select class='shell-select' value={$appShell.themePreference} onchange={(event) => appShell.setThemePreference(event.currentTarget.value as typeof $appShell.themePreference)}>
+        <select class='shell-select' value={$appShell.themePreference} onchange={event => appShell.setThemePreference(event.currentTarget.value as typeof $appShell.themePreference)}>
           <option value='system'>{t('theme_system')}</option>
           <option value='light'>{t('theme_light')}</option>
           <option value='dark'>{t('theme_dark')}</option>
@@ -42,7 +43,7 @@
 
       <label class='shell-field'>
         <span>{t('locale_label')}</span>
-        <select class='shell-select' value={$appShell.locale} onchange={(event) => appShell.setLocalePreference(event.currentTarget.value as typeof $appShell.locale)}>
+        <select class='shell-select' value={$appShell.locale} onchange={event => appShell.setLocalePreference(event.currentTarget.value as typeof $appShell.locale)}>
           <option value='zh-CN'>{t('locale_zh_cn')}</option>
           <option value='en'>{t('locale_en')}</option>
         </select>
@@ -53,7 +54,7 @@
       <div class='mt-3 grid gap-3 lg:grid-cols-2'>
         <label class='shell-field'>
           <span>{t('general_task_status_label')}</span>
-          <select class='shell-select' value={task.status} onchange={(event) => appShell.setTaskStatus(task.id, event.currentTarget.value as TaskStatus)}>
+          <select class='shell-select' value={task.status} onchange={event => appShell.setTaskStatus(task.id, event.currentTarget.value as TaskStatus)}>
             {#each statusOptions as statusOption}
               <option value={statusOption}>{translateTaskStatus(statusOption)}</option>
             {/each}

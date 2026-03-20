@@ -1,8 +1,10 @@
+import type { AppLocale } from '$lib/i18n'
+import type { ThemePreference } from '$lib/theme'
 import { browser } from '$app/environment'
-import { writable } from 'svelte/store'
+import { getCurrentLocale, setAppLocale } from '$lib/i18n'
 import { m } from '$lib/paraglide/messages.js'
-import { getCurrentLocale, setAppLocale, type AppLocale } from '$lib/i18n'
-import { applyDocumentTheme, type ThemePreference } from '$lib/theme'
+import { applyDocumentTheme } from '$lib/theme'
+import { writable } from 'svelte/store'
 
 export type TaskStatus = 'in_progress' | 'completed' | 'failed'
 export type ChatMode = 'conversation' | 'operation'
@@ -655,7 +657,7 @@ function createAppShell() {
 
     const prompt = task.draft.trim()
 
-    mutate((state) => ({
+    mutate(state => ({
       ...state,
       tasks: state.tasks.map((item) => {
         if (item.id !== taskId) {
@@ -796,7 +798,7 @@ function createAppShell() {
   }
 
   function setColumnWidth(side: keyof ColumnWidths, width: number) {
-    mutate((state) => ({
+    mutate(state => ({
       ...state,
       columnWidths: {
         ...state.columnWidths,

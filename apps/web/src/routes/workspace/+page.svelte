@@ -1,7 +1,7 @@
 <script lang='ts'>
   import { goto } from '$app/navigation'
-  import { onMount } from 'svelte'
   import { appShell, buildWorkspacePath } from '$lib/stores/app-shell'
+  import { onMount } from 'svelte'
 
   onMount(async () => {
     appShell.hydrate()

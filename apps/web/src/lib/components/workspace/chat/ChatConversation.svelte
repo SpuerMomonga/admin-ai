@@ -1,12 +1,13 @@
 <script lang='ts'>
-  import { goto } from '$app/navigation'
+  import type { AdminPanel } from '$lib/stores/app-shell'
   import { browser } from '$app/environment'
+  import { goto } from '$app/navigation'
   import { translate as t } from '$lib/i18n'
-  import { appShell, buildWorkspacePath, type AdminPanel } from '$lib/stores/app-shell'
+  import { appShell, buildWorkspacePath } from '$lib/stores/app-shell'
   import { Tooltip } from '@admin-ai/ui'
   import { Check, Copy, ThumbsDown, ThumbsUp } from '@lucide/svelte'
 
-  let { taskId, panel } = $props<{ taskId: string | null, panel: AdminPanel }>()
+  const { taskId, panel } = $props<{ taskId: string | null, panel: AdminPanel }>()
   let copiedMessageId = $state<string | null>(null)
 
   const activeTask = $derived($appShell.tasks.find(task => task.id === taskId) ?? null)

@@ -17,7 +17,7 @@
         <input
           class='shell-input'
           value={$appShell.settings.models.primaryModel}
-          oninput={(event) => appShell.updateSettingsSection('models', { primaryModel: event.currentTarget.value })}
+          oninput={event => appShell.updateSettingsSection('models', { primaryModel: event.currentTarget.value })}
         />
       </label>
 
@@ -26,7 +26,7 @@
         <input
           class='shell-input'
           value={$appShell.settings.models.operationModel}
-          oninput={(event) => appShell.updateSettingsSection('models', { operationModel: event.currentTarget.value })}
+          oninput={event => appShell.updateSettingsSection('models', { operationModel: event.currentTarget.value })}
         />
       </label>
 
@@ -35,7 +35,7 @@
         <input
           class='shell-input'
           value={$appShell.settings.models.routingPolicy}
-          oninput={(event) => appShell.updateSettingsSection('models', { routingPolicy: event.currentTarget.value })}
+          oninput={event => appShell.updateSettingsSection('models', { routingPolicy: event.currentTarget.value })}
         />
       </label>
     </div>

@@ -14,7 +14,7 @@
     <div class='grid gap-3 lg:grid-cols-[200px_200px_minmax(0,1fr)]'>
       <label class='shell-field'>
         <span>{t('knowledge_default_label')}</span>
-        <select class='shell-select' value={$appShell.settings.knowledge.activeBaseId} onchange={(event) => appShell.updateSettingsSection('knowledge', { activeBaseId: event.currentTarget.value })}>
+        <select class='shell-select' value={$appShell.settings.knowledge.activeBaseId} onchange={event => appShell.updateSettingsSection('knowledge', { activeBaseId: event.currentTarget.value })}>
           {#each knowledgeBases as knowledgeBase}
             <option value={knowledgeBase.id}>{knowledgeBase.badge}</option>
           {/each}
@@ -23,7 +23,7 @@
 
       <label class='shell-field'>
         <span>{t('knowledge_scope_label')}</span>
-        <select class='shell-select' value={$appShell.settings.knowledge.queryScope} onchange={(event) => appShell.updateSettingsSection('knowledge', { queryScope: event.currentTarget.value as 'current' | 'global' })}>
+        <select class='shell-select' value={$appShell.settings.knowledge.queryScope} onchange={event => appShell.updateSettingsSection('knowledge', { queryScope: event.currentTarget.value as 'current' | 'global' })}>
           <option value='current'>{t('knowledge_scope_current')}</option>
           <option value='global'>{t('knowledge_scope_global')}</option>
         </select>
@@ -34,7 +34,7 @@
         <input
           class='shell-input'
           value={$appShell.settings.knowledge.searchQuery}
-          oninput={(event) => appShell.updateSettingsSection('knowledge', { searchQuery: event.currentTarget.value })}
+          oninput={event => appShell.updateSettingsSection('knowledge', { searchQuery: event.currentTarget.value })}
         />
       </label>
     </div>

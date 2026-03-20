@@ -1,12 +1,13 @@
 <script lang='ts'>
-  import { Tooltip } from '@admin-ai/ui'
+  import type { AdminPanel } from '$lib/stores/app-shell'
   import type { Snippet } from 'svelte'
   import { goto } from '$app/navigation'
   import { translate as t, translateAdminPanel } from '$lib/i18n'
-  import { adminPanels, appShell, buildWorkspacePath, type AdminPanel } from '$lib/stores/app-shell'
+  import { adminPanels, appShell, buildWorkspacePath } from '$lib/stores/app-shell'
+  import { Tooltip } from '@admin-ai/ui'
   import { BookOpenText, Cog, Layers3, PanelRightClose, PanelRightOpen, ShieldCheck, UserRound } from '@lucide/svelte'
 
-  let { taskId, panel, children } = $props<{ taskId: string | null, panel: AdminPanel, children?: Snippet }>()
+  const { taskId, panel, children } = $props<{ taskId: string | null, panel: AdminPanel, children?: Snippet }>()
 
   const panelIcons: Record<AdminPanel, typeof Cog> = {
     general: Cog,

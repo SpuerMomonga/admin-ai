@@ -1,13 +1,14 @@
 <script lang='ts'>
-  import { Tooltip } from '@admin-ai/ui'
+  import type { AdminPanel } from '$lib/stores/app-shell'
   import { goto } from '$app/navigation'
-  import { translate as t } from '$lib/i18n'
   import AppLogo from '$lib/components/AppLogo.svelte'
   import TaskRailItem from '$lib/components/workspace/tasks/TaskRailItem.svelte'
-  import { appShell, buildWorkspacePath, type AdminPanel } from '$lib/stores/app-shell'
+  import { translate as t } from '$lib/i18n'
+  import { appShell, buildWorkspacePath } from '$lib/stores/app-shell'
+  import { Tooltip } from '@admin-ai/ui'
   import { CirclePlus, PanelLeftClose } from '@lucide/svelte'
 
-  let { taskId, panel } = $props<{ taskId: string | null, panel: AdminPanel }>()
+  const { taskId, panel } = $props<{ taskId: string | null, panel: AdminPanel }>()
 
   async function selectTask(nextTaskId: string) {
     await goto(buildWorkspacePath(nextTaskId, panel))
@@ -19,6 +20,7 @@
   }
 
   function renameTask(taskId: string, currentTitle: string) {
+    // eslint-disable-next-line no-alert
     const nextTitle = window.prompt(t('rename_task_prompt'), currentTitle)
 
     if (nextTitle === null) {

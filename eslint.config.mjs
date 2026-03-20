@@ -11,6 +11,8 @@ export default antfu(
   },
   {
     ignores: [
+      '**/.codex/**',
+      '**/src/lib/paraglide/**',
       '**/dist/**',
       '**/build/**',
       '**/.svelte-kit/**',

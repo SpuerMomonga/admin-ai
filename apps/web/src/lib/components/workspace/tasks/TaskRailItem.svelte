@@ -1,11 +1,11 @@
 <script lang='ts'>
-  import { browser } from '$app/environment'
-  import { onMount } from 'svelte'
-  import { translate as t, translateTaskStatus } from '$lib/i18n'
   import type { TaskRecord, TaskStatus } from '$lib/stores/app-shell'
+  import { browser } from '$app/environment'
+  import { translate as t, translateTaskStatus } from '$lib/i18n'
   import { Ellipsis, PencilLine, Trash2 } from '@lucide/svelte'
+  import { onMount } from 'svelte'
 
-  let {
+  const {
     task,
     active = false,
     collapsed = false,
@@ -73,23 +73,23 @@
     title={task.title}
     onclick={onselect}
   >
-  {#if collapsed}
-    <div class='mx-auto flex size-9 items-center justify-center rounded-[8px] border border-shell-border bg-shell-muted-panel text-[11px] font-semibold text-foreground'>
-      {task.title.slice(0, 2)}
-    </div>
-    <span class={`mx-auto mt-2 block size-2 rounded-full ${tone}`}></span>
-  {:else}
-    <div class='flex items-center gap-2 pr-8'>
-      <span class={`size-2 shrink-0 rounded-full ${tone}`}></span>
-      <span class='truncate text-sm font-medium text-foreground'>{task.title}</span>
-    </div>
+    {#if collapsed}
+      <div class='mx-auto flex size-9 items-center justify-center rounded-[8px] border border-shell-border bg-shell-muted-panel text-[11px] font-semibold text-foreground'>
+        {task.title.slice(0, 2)}
+      </div>
+      <span class={`mx-auto mt-2 block size-2 rounded-full ${tone}`}></span>
+    {:else}
+      <div class='flex items-center gap-2 pr-8'>
+        <span class={`size-2 shrink-0 rounded-full ${tone}`}></span>
+        <span class='truncate text-sm font-medium text-foreground'>{task.title}</span>
+      </div>
 
-    <div class='mt-1.5 flex items-center gap-1 pl-4 pr-8 text-[11px] text-muted-foreground'>
-      <span class='shrink-0'>{translateTaskStatus(task.status)}</span>
-      <span aria-hidden='true' class='shrink-0 text-[12px] leading-none text-muted-foreground/80'>•</span>
-      <span class='shrink-0'>{formatTime(task.updatedAt)}</span>
-    </div>
-  {/if}
+      <div class='mt-1.5 flex items-center gap-1 pl-4 pr-8 text-[11px] text-muted-foreground'>
+        <span class='shrink-0'>{translateTaskStatus(task.status)}</span>
+        <span aria-hidden='true' class='shrink-0 text-[12px] leading-none text-muted-foreground/80'>•</span>
+        <span class='shrink-0'>{formatTime(task.updatedAt)}</span>
+      </div>
+    {/if}
   </button>
 
   {#if !collapsed}

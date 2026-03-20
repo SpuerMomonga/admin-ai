@@ -1,6 +1,6 @@
 import type { Handle } from '@sveltejs/kit'
-import { paraglideMiddleware } from '$lib/paraglide/server.js'
 import { getTextDirection } from '$lib/paraglide/runtime.js'
+import { paraglideMiddleware } from '$lib/paraglide/server.js'
 
 export const handle: Handle = async ({ event, resolve }) => {
   return paraglideMiddleware(event.request, ({ locale }) => {
