@@ -1,6 +1,11 @@
 <script lang='ts'>
   import { goto } from '$app/navigation'
   import AppLogo from '$lib/components/AppLogo.svelte'
+  import { Button } from '$lib/components/ui/button'
+  import { Card } from '$lib/components/ui/card'
+  import { Checkbox } from '$lib/components/ui/checkbox'
+  import { Input } from '$lib/components/ui/input'
+  import { Label } from '$lib/components/ui/label'
   import { translate as t } from '$lib/i18n'
   import { appShell, buildWorkspacePath } from '$lib/stores/app-shell'
   import { LockKeyhole, Sparkles } from '@lucide/svelte'
@@ -16,7 +21,7 @@
     const snapshot = appShell.getSnapshot()
 
     if (snapshot.isLoggedIn) {
-      await goto(buildWorkspacePath(null, snapshot.activePanel), { replaceState: true })
+      await goto(buildWorkspacePath(snapshot.activeTaskId, snapshot.activePanel), { replaceState: true })
     }
   })
 
@@ -24,7 +29,7 @@
     appShell.login(account)
 
     const snapshot = appShell.getSnapshot()
-    await goto(buildWorkspacePath(null, snapshot.activePanel))
+    await goto(buildWorkspacePath(snapshot.activeTaskId, snapshot.activePanel))
   }
 </script>
 
@@ -47,18 +52,18 @@
     </div>
 
     <div class='mt-8 grid gap-3 md:grid-cols-3'>
-      <article class='shell-card'>
+      <Card size='sm' class='px-4'>
         <p class='shell-card-label'>01</p>
         <p class='mt-2 text-sm leading-6 text-muted-foreground'>{t('login_tip_one')}</p>
-      </article>
-      <article class='shell-card'>
+      </Card>
+      <Card size='sm' class='px-4'>
         <p class='shell-card-label'>02</p>
         <p class='mt-2 text-sm leading-6 text-muted-foreground'>{t('login_tip_two')}</p>
-      </article>
-      <article class='shell-card'>
+      </Card>
+      <Card size='sm' class='px-4'>
         <p class='shell-card-label'>03</p>
         <p class='mt-2 text-sm leading-6 text-muted-foreground'>{t('login_tip_three')}</p>
-      </article>
+      </Card>
     </div>
   </div>
 
@@ -75,39 +80,39 @@
         event.preventDefault()
         void submit()
       }}>
-        <label class='shell-field'>
-          <span>{t('account_label')}</span>
-          <input
-            class='shell-input'
+        <div class='grid gap-2'>
+          <Label for='login-account'>{t('account_label')}</Label>
+          <Input
+            id='login-account'
             bind:value={account}
             placeholder={t('account_placeholder')}
           />
-        </label>
+        </div>
 
-        <label class='shell-field'>
-          <span>{t('password_label')}</span>
-          <input
+        <div class='grid gap-2'>
+          <Label for='login-password'>{t('password_label')}</Label>
+          <Input
+            id='login-password'
             type='password'
-            class='shell-input'
             bind:value={password}
             placeholder={t('password_placeholder')}
           />
-        </label>
+        </div>
 
-        <label class='flex items-center gap-2 text-sm text-muted-foreground'>
-          <input class='size-4 rounded border-shell-border accent-brand' type='checkbox' bind:checked={rememberMe} />
-          <span>{t('remember_me')}</span>
-        </label>
+        <div class='flex items-center gap-2 text-sm text-muted-foreground'>
+          <Checkbox id='remember-me' bind:checked={rememberMe} />
+          <Label for='remember-me' class='text-sm font-normal text-muted-foreground'>{t('remember_me')}</Label>
+        </div>
 
-        <button type='submit' class='shell-primary-button w-full justify-center'>
+        <Button type='submit' class='w-full justify-center'>
           {t('enter_workspace')}
-        </button>
+        </Button>
       </form>
     </div>
 
-    <div class='mt-6 rounded-[8px] border border-shell-border bg-shell-muted-panel p-4'>
+    <Card size='sm' class='mt-6 border-shell-border bg-shell-muted-panel px-4'>
       <p class='text-sm font-semibold text-foreground'>{t('app_subtitle')}</p>
       <p class='mt-2 text-sm leading-6 text-muted-foreground'>{t('save_state_hint')}</p>
-    </div>
+    </Card>
   </div>
 </section>

@@ -842,16 +842,16 @@ export const appShell = createAppShell()
 
 export function buildWorkspacePath(taskId: string | null | undefined, panel: AdminPanel) {
   if (!taskId) {
-    return `/workspace/${panel}`
+    return `/${panel}`
   }
 
   const searchParams = new URLSearchParams({ taskId })
-  return `/workspace/${panel}?${searchParams.toString()}`
+  return `/${panel}?${searchParams.toString()}`
 }
 
 export function resolveAdminPanelFromPathname(pathname: string) {
   const segments = pathname.split('/').filter(Boolean)
-  const maybePanel = segments[1]
+  const maybePanel = segments[0]
 
   return maybePanel && isAdminPanel(maybePanel) ? maybePanel : null
 }

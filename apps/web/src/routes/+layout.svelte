@@ -1,10 +1,9 @@
 <script lang='ts'>
   import favicon from '$lib/assets/favicon.svg'
+  import { TooltipProvider } from '$lib/components/ui/tooltip'
   import { appShell } from '$lib/stores/app-shell'
   import { applyDocumentTheme, watchSystemTheme } from '$lib/theme'
-  import { TooltipProvider } from '@admin-ai/ui'
   import { onMount } from 'svelte'
-  import '@admin-ai/ui/styles.css'
   import './layout.css'
 
   const { children } = $props()

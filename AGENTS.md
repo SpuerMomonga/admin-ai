@@ -4,25 +4,23 @@
 
 - `apps/web` contains frontend routes, app-specific UI composition, and browser-side API access.
 - `apps/api` contains backend HTTP entrypoints, service wiring, and runtime configuration.
-- `packages/ui` is a source-only shared UI package. Keep it framework-light and free of page logic.
 - `packages/contracts` contains shared API schemas and types.
 
 ## Core rules
 
 - Keep workspace-wide configuration in the repository root instead of duplicating it under `apps/*` or `packages/*`.
 - Prefer pnpm workspace dependencies with the `workspace:*` protocol for internal packages.
-- Put reusable visual components in `packages/ui` only when they are not tied to a specific route or page.
 - Put shared request and response schemas in `packages/contracts`; do not put frontend stores or backend services there.
 - After making code changes, run `pnpm lint:fix`. If auto-fixes do not fully resolve issues, fix the remaining problems manually before finishing.
 
 ## Frontend architecture
 
 - `apps/web` currently behaves as a pure SPA-style client app. Do not introduce SSR-dependent behavior unless explicitly required.
-- `apps/web` consumes `packages/ui` as source. Internal imports inside `packages/ui` must stay relative; do not introduce `$lib` or SvelteKit-only aliases there.
-- `apps/web/src/routes/layout.css` is the Tailwind entry and must continue to scan `packages/ui/src/lib`.
-- Shared UI styles are exported from `@admin-ai/ui/styles.css`.
+- `apps/web` owns the UI layer directly. Route-agnostic components should live under `apps/web/src/lib/components/ui`.
+- `apps/web` uses local `shadcn-svelte` components configured through `apps/web/components.json`. Prefer those components before introducing bespoke primitives.
+- `apps/web/src/routes/layout.css` is the Tailwind entry and the source of app-wide design tokens.
 - User-facing copy in `apps/web` must go through `@inlang/paraglide-js`; do not introduce a second i18n path for route text, menus, breadcrumbs, or shell actions.
-- Theme tokens should be defined with Tailwind `@theme` on top of `@admin-ai/ui/styles.css`; the console brand primary is `#004EA2`.
+- Theme tokens should be defined with Tailwind `@theme` in `apps/web/src/routes/layout.css`; the console brand primary is `#004EA2`.
 - The console UI must support both light and dark appearance and stay visually compact. Avoid oversized radii, padding, and shell-level spacing.
 - Locale switching must not be encoded into the URL. Persist locale in client state plus durable storage.
 - The current frontend locales are `zh-CN` and `en`.
@@ -30,7 +28,7 @@
 ## Workspace routing and state
 
 - Keep the admin console shell route-driven. Major views such as login and workspace must stay as separate routes.
-- Workspace `taskId` must live in the query string, for example `/workspace/general?taskId=task-101`; do not add a `[taskId]` path segment for workspace routes.
+- Workspace `taskId` must live in the query string, for example `/general?taskId=task-101`; do not add a `[taskId]` path segment for workspace routes.
 - The routed admin panels are `general`, `account`, `models`, `knowledge`, and `rules`.
 - The right-side admin area is global settings UI; switching tasks must not change the admin panel content model.
 - Creating a new task must preserve the current routed admin panel and only change the `taskId` context.
@@ -50,8 +48,9 @@
 
 - Admin management pages should live directly in their route files, not under `src/lib/components`.
 - Only split a route page when it exceeds roughly 300 lines, and keep split files under the same route folder.
-- Put route-page code into `src/lib/components` only when it is shared across routes, cannot reasonably live in `packages/ui`, and would otherwise be duplicated.
-- Put reusable shell primitives in `packages/ui` only when they are route-agnostic and not tied to workspace-specific composition.
+- Put route-page code into `src/lib/components` only when it is shared across routes, cannot reasonably live in `src/lib/components/ui`, and would otherwise be duplicated.
+- Prefer local `shadcn-svelte` components in `apps/web/src/lib/components/ui` before adding one-off buttons, inputs, cards, menus, tooltips, or selects.
+- Add bespoke UI primitives only when the existing `shadcn-svelte` component set is genuinely insufficient for the interaction or visual requirement.
 
 ## Backend rules
 
