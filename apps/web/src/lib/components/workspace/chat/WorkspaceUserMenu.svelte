@@ -6,7 +6,7 @@
   import { appShell, buildWorkspacePath, type AdminPanel } from '$lib/stores/app-shell'
   import { Globe2, LogOut, MoonStar, Settings2, SunMedium, UserCircle2 } from '@lucide/svelte'
 
-  let { taskId, panel } = $props<{ taskId: string, panel: AdminPanel }>()
+  let { taskId, panel } = $props<{ taskId: string | null, panel: AdminPanel }>()
 
   let menuElement = $state<HTMLDivElement | null>(null)
   let open = $state(false)

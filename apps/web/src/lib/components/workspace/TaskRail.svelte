@@ -7,7 +7,7 @@
   import { appShell, buildWorkspacePath, type AdminPanel } from '$lib/stores/app-shell'
   import { CirclePlus, PanelLeftClose } from '@lucide/svelte'
 
-  let { taskId, panel } = $props<{ taskId: string, panel: AdminPanel }>()
+  let { taskId, panel } = $props<{ taskId: string | null, panel: AdminPanel }>()
 
   async function selectTask(nextTaskId: string) {
     await goto(buildWorkspacePath(nextTaskId, panel))
@@ -32,7 +32,7 @@
     const result = appShell.deleteTask(taskIdToDelete)
 
     if (result.deletedActiveTask) {
-      await goto(buildWorkspacePath(result.nextActiveTaskId, panel))
+      await goto(buildWorkspacePath(null, panel))
     }
   }
 </script>

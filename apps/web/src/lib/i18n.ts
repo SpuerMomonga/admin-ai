@@ -112,6 +112,15 @@ const textMessages = {
   upvote_message: m.upvote_message,
   welcome_back: m.welcome_back,
   workspace_label: m.workspace_label,
+  workspace_empty_description: m.workspace_empty_description,
+  workspace_empty_hint_one: m.workspace_empty_hint_one,
+  workspace_empty_hint_three: m.workspace_empty_hint_three,
+  workspace_empty_hint_two: m.workspace_empty_hint_two,
+  workspace_empty_prompt_one: m.workspace_empty_prompt_one,
+  workspace_empty_prompt_three: m.workspace_empty_prompt_three,
+  workspace_empty_prompt_two: m.workspace_empty_prompt_two,
+  workspace_loading: m.workspace_loading,
+  workspace_empty_title: m.workspace_empty_title,
   workspace_title: m.workspace_title,
 } as const satisfies Record<string, ParameterlessMessage>
 

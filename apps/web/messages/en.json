@@ -15,7 +15,7 @@
   "assistant_reply_operation": "Operation plan drafted for \"{title}\". Knowledge base: {knowledgeBase}. Next step is to confirm the execution boundary for: {prompt}",
   "collapse_left": "Collapse left rail",
   "collapse_right": "Collapse right admin panel",
-  "composer_placeholder": "Enter a question, operation request, or task context…",
+  "composer_placeholder": "Enter a question, operation request, or task context...",
   "conversation_mode": "Conversation",
   "copy_message": "Copy message",
   "delete_task": "Delete task",
@@ -114,5 +114,14 @@
   "upvote_message": "Mark as helpful",
   "welcome_back": "Welcome back",
   "workspace_label": "Workspace",
+  "workspace_empty_description": "Select a task from the left rail, or create a new one to start a conversation or operation flow.",
+  "workspace_empty_hint_one": "Draft an operating rule or review an existing policy.",
+  "workspace_empty_hint_three": "Outline a new admin task and then open it from the task rail.",
+  "workspace_empty_hint_two": "Compare model choices, knowledge sources, or approval settings before execution.",
+  "workspace_empty_prompt_one": "Help me query user data",
+  "workspace_empty_prompt_three": "Summarize today's pending admin tasks",
+  "workspace_empty_prompt_two": "Open the model settings page",
+  "workspace_loading": "Loading workspace...",
+  "workspace_empty_title": "How can I help you?",
   "workspace_title": "Workspace"
 }

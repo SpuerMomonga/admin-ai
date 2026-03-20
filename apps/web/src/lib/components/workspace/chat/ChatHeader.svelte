@@ -7,7 +7,7 @@
   import WorkspaceUserMenu from './WorkspaceUserMenu.svelte'
   import { MessageCirclePlus, PanelLeftOpen, PanelRightOpen } from '@lucide/svelte'
 
-  let { taskId, panel } = $props<{ taskId: string, panel: AdminPanel }>()
+  let { taskId, panel } = $props<{ taskId: string | null, panel: AdminPanel }>()
 
   const activeTask = $derived($appShell.tasks.find(task => task.id === taskId) ?? null)
 

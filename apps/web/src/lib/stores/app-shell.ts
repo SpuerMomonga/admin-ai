@@ -110,6 +110,14 @@ const maxDesktopLeftWidth = 420
 const minDesktopRightWidth = 280
 const maxDesktopRightWidth = 1600
 
+function getViewportWidth() {
+  if (!browser || typeof document === 'undefined') {
+    return 1440
+  }
+
+  return document.documentElement.clientWidth || window.innerWidth || 1440
+}
+
 function buildTimestamp(minutesAgo: number) {
   return new Date(Date.now() - minutesAgo * 60_000).toISOString()
 }
@@ -190,6 +198,11 @@ function createDefaultTasks(locale: AppLocale): TaskRecord[] {
   ]
 }
 
+function getDefaultRightPaneWidth() {
+  const viewportWidth = getViewportWidth()
+  return Math.min(Math.max(Math.round(viewportWidth * 0.5), minDesktopRightWidth), maxDesktopRightWidth)
+}
+
 function createDefaultState(): AppShellState {
   const locale = browser ? getCurrentLocale() : 'zh-CN'
 
@@ -201,7 +214,7 @@ function createDefaultState(): AppShellState {
     rightCollapsed: false,
     columnWidths: {
       left: 220,
-      right: 360,
+      right: getDefaultRightPaneWidth(),
     },
     activeTaskId: 'task-101',
     activePanel: 'general',
@@ -262,6 +275,20 @@ function clampWidth(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max)
 }
 
+function normalizeCollapsedPanels(leftCollapsed: boolean, rightCollapsed: boolean) {
+  if (leftCollapsed && rightCollapsed) {
+    return {
+      leftCollapsed: false,
+      rightCollapsed: false,
+    }
+  }
+
+  return {
+    leftCollapsed,
+    rightCollapsed,
+  }
+}
+
 function normalizeTask(task: Partial<TaskRecord>, index: number): TaskRecord {
   const fallback = createTaskRecord(`task-auto-${index + 1}`, index + 1)
 
@@ -288,13 +315,14 @@ function normalizeTask(task: Partial<TaskRecord>, index: number): TaskRecord {
 
 function normalizeState(input: Partial<AppShellState>): AppShellState {
   const defaults = createDefaultState()
-  const nextTasks = Array.isArray(input.tasks) && input.tasks.length > 0
+  const nextTasks = Array.isArray(input.tasks)
     ? input.tasks.map(normalizeTask)
     : defaults.tasks
+  const collapsedPanels = normalizeCollapsedPanels(Boolean(input.leftCollapsed), Boolean(input.rightCollapsed))
 
   const activeTaskId = nextTasks.some(task => task.id === input.activeTaskId)
     ? (input.activeTaskId as string)
-    : nextTasks[0]?.id ?? defaults.activeTaskId
+    : nextTasks[0]?.id ?? ''
 
   const activePanel = typeof input.activePanel === 'string' && isAdminPanel(input.activePanel)
     ? input.activePanel
@@ -312,8 +340,8 @@ function normalizeState(input: Partial<AppShellState>): AppShellState {
     themePreference: typeof input.themePreference === 'string' && isThemePreference(input.themePreference)
       ? input.themePreference
       : defaults.themePreference,
-    leftCollapsed: Boolean(input.leftCollapsed),
-    rightCollapsed: Boolean(input.rightCollapsed),
+    leftCollapsed: collapsedPanels.leftCollapsed,
+    rightCollapsed: collapsedPanels.rightCollapsed,
     columnWidths: {
       left: typeof input.columnWidths?.left === 'number'
         ? clampWidth(input.columnWidths.left, minDesktopLeftWidth, maxDesktopLeftWidth)
@@ -361,6 +389,27 @@ function normalizeState(input: Partial<AppShellState>): AppShellState {
   }
 }
 
+function getInitialState(): AppShellState {
+  const defaults = createDefaultState()
+
+  if (!browser) {
+    return defaults
+  }
+
+  try {
+    const stored = localStorage.getItem(storageKey)
+
+    if (!stored) {
+      return defaults
+    }
+
+    return normalizeState(JSON.parse(stored) as Partial<AppShellState>)
+  }
+  catch {
+    return defaults
+  }
+}
+
 function createTaskId() {
   return `task-${Date.now().toString(36)}`
 }
@@ -385,11 +434,11 @@ function buildAssistantReply(state: AppShellState, task: TaskRecord, prompt: str
 }
 
 function createAppShell() {
-  const initialState = createDefaultState()
+  const initialState = getInitialState()
   const { subscribe, set, update } = writable<AppShellState>(initialState)
 
   let currentState = initialState
-  let hydrated = false
+  let hydrated = browser
 
   function syncDocumentState(state: AppShellState) {
     applyDocumentTheme(state.themePreference)
@@ -410,7 +459,12 @@ function createAppShell() {
   }
 
   function hydrate() {
-    if (!browser || hydrated) {
+    if (!browser) {
+      return
+    }
+
+    if (hydrated) {
+      syncDocumentState(currentState)
       return
     }
 
@@ -459,19 +513,51 @@ function createAppShell() {
   }
 
   function toggleLeftCollapsed() {
-    mutate(state => ({ ...state, leftCollapsed: !state.leftCollapsed }))
+    mutate((state) => {
+      const collapsedPanels = normalizeCollapsedPanels(!state.leftCollapsed, state.rightCollapsed)
+
+      return {
+        ...state,
+        leftCollapsed: collapsedPanels.leftCollapsed,
+        rightCollapsed: collapsedPanels.rightCollapsed,
+      }
+    })
   }
 
   function toggleRightCollapsed() {
-    mutate(state => ({ ...state, rightCollapsed: !state.rightCollapsed }))
+    mutate((state) => {
+      const collapsedPanels = normalizeCollapsedPanels(state.leftCollapsed, !state.rightCollapsed)
+
+      return {
+        ...state,
+        leftCollapsed: collapsedPanels.leftCollapsed,
+        rightCollapsed: collapsedPanels.rightCollapsed,
+      }
+    })
   }
 
   function setLeftCollapsed(leftCollapsed: boolean) {
-    mutate(state => ({ ...state, leftCollapsed }))
+    mutate((state) => {
+      const collapsedPanels = normalizeCollapsedPanels(leftCollapsed, state.rightCollapsed)
+
+      return {
+        ...state,
+        leftCollapsed: collapsedPanels.leftCollapsed,
+        rightCollapsed: collapsedPanels.rightCollapsed,
+      }
+    })
   }
 
   function setRightCollapsed(rightCollapsed: boolean) {
-    mutate(state => ({ ...state, rightCollapsed }))
+    mutate((state) => {
+      const collapsedPanels = normalizeCollapsedPanels(state.leftCollapsed, rightCollapsed)
+
+      return {
+        ...state,
+        leftCollapsed: collapsedPanels.leftCollapsed,
+        rightCollapsed: collapsedPanels.rightCollapsed,
+      }
+    })
   }
 
   function createTask() {
@@ -510,20 +596,7 @@ function createAppShell() {
     mutate((state) => {
       const remainingTasks = state.tasks.filter(task => task.id !== taskId)
 
-      if (remainingTasks.length === 0) {
-        const replacementTask = createTaskRecord(createTaskId(), 1)
-        nextActiveTaskId = replacementTask.id
-
-        return {
-          ...state,
-          activeTaskId: replacementTask.id,
-          tasks: [replacementTask],
-        }
-      }
-
-      if (deletingActiveTask) {
-        nextActiveTaskId = remainingTasks[0].id
-      }
+      nextActiveTaskId = deletingActiveTask ? (remainingTasks[0]?.id ?? '') : state.activeTaskId
 
       return {
         ...state,
@@ -765,13 +838,18 @@ function createAppShell() {
 
 export const appShell = createAppShell()
 
-export function buildWorkspacePath(taskId: string, panel: AdminPanel) {
-  return `/workspace/${taskId}/${panel}`
+export function buildWorkspacePath(taskId: string | null | undefined, panel: AdminPanel) {
+  if (!taskId) {
+    return `/workspace/${panel}`
+  }
+
+  const searchParams = new URLSearchParams({ taskId })
+  return `/workspace/${panel}?${searchParams.toString()}`
 }
 
 export function resolveAdminPanelFromPathname(pathname: string) {
   const segments = pathname.split('/').filter(Boolean)
-  const maybePanel = segments[2]
+  const maybePanel = segments[1]
 
   return maybePanel && isAdminPanel(maybePanel) ? maybePanel : null
 }

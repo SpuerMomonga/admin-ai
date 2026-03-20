@@ -3,6 +3,7 @@
   import { browser } from '$app/environment'
   import { goto } from '$app/navigation'
   import { page } from '$app/state'
+  import { translate as t } from '$lib/i18n'
   import AdminColumn from '$lib/components/workspace/AdminColumn.svelte'
   import ChatColumn from '$lib/components/workspace/ChatColumn.svelte'
   import ColumnResizeHandle from '$lib/components/workspace/ColumnResizeHandle.svelte'
@@ -18,7 +19,7 @@
   const desktopMinMiddleWidth = 420
   const desktopHandleWidth = 12
 
-  const taskId = $derived(page.params.taskId ?? $appShell.activeTaskId)
+  const taskId = $derived(page.url.searchParams.get('taskId'))
   const panel = $derived(
     resolveAdminPanelFromPathname(page.url.pathname)
       ? resolveAdminPanelFromPathname(page.url.pathname)
@@ -32,11 +33,16 @@
   })
 
   $effect(() => {
-    const nextTaskId = page.params.taskId
+    const nextTaskId = page.url.searchParams.get('taskId')
     const nextPanel = resolveAdminPanelFromPathname(page.url.pathname)
 
     if (nextTaskId && nextPanel) {
       appShell.activateRoute(nextTaskId, nextPanel)
+      return
+    }
+
+    if (nextPanel) {
+      appShell.openPanel(nextPanel)
     }
   })
 
@@ -44,10 +50,11 @@
     return Math.min(Math.max(value, min), max)
   }
 
+  const workspaceMeasured = $derived(containerWidth > 0)
   const visibleHandleCount = $derived(Number(!$appShell.leftCollapsed) + Number(!$appShell.rightCollapsed))
   const usableWidth = $derived(Math.max(containerWidth - desktopHandleWidth * visibleHandleCount, 0))
   const leftPaneWidth = $derived.by(() => {
-    if ($appShell.leftCollapsed || usableWidth === 0) {
+    if ($appShell.leftCollapsed) {
       return 0
     }
 
@@ -55,7 +62,7 @@
     return clamp($appShell.columnWidths.left, 180, Math.max(180, maxLeft))
   })
   const rightPaneWidth = $derived.by(() => {
-    if ($appShell.rightCollapsed || usableWidth === 0) {
+    if ($appShell.rightCollapsed) {
       return 0
     }
 
@@ -130,39 +137,54 @@
 <section
   bind:this={containerElement}
   bind:clientWidth={containerWidth}
-  class='workspace-shell flex h-dvh w-full overflow-hidden'
+  class='workspace-shell relative h-dvh w-full overflow-hidden'
+  aria-busy={!workspaceMeasured}
 >
-  {#if !$appShell.leftCollapsed}
-    <div
-      class='h-full min-h-0 shrink-0 overflow-hidden'
-      style={`width:${leftPaneWidth}px;`}
-    >
-      <TaskRail taskId={taskId} panel={panel as AdminPanel} />
+  <div class={`flex h-full w-full overflow-hidden ${workspaceMeasured ? '' : 'invisible'}`}>
+    {#if !$appShell.leftCollapsed}
+      <div
+        class='h-full min-h-0 shrink-0 overflow-hidden'
+        style={`width:${leftPaneWidth}px;`}
+      >
+        <TaskRail taskId={taskId} panel={panel as AdminPanel} />
+      </div>
+
+      <ColumnResizeHandle
+        title='Resize task rail'
+        onpointerdown={event => beginResize('left', event)}
+      />
+    {/if}
+
+    <div class='h-full min-h-0 min-w-0 flex-1 overflow-hidden'>
+      <ChatColumn taskId={taskId} panel={panel as AdminPanel} />
     </div>
 
-    <ColumnResizeHandle
-      title='Resize task rail'
-      onpointerdown={event => beginResize('left', event)}
-    />
-  {/if}
+    {#if !$appShell.rightCollapsed}
+      <ColumnResizeHandle
+        title='Resize admin panel'
+        onpointerdown={event => beginResize('right', event)}
+      />
 
-  <div class='h-full min-h-0 min-w-0 flex-1 overflow-hidden'>
-    <ChatColumn taskId={taskId} panel={panel as AdminPanel} />
+      <div
+        class='h-full min-h-0 shrink-0 overflow-hidden'
+        style={`width:${rightPaneWidth}px;`}
+      >
+        <AdminColumn taskId={taskId} panel={panel as AdminPanel}>
+          {@render children()}
+        </AdminColumn>
+      </div>
+    {/if}
   </div>
 
-  {#if !$appShell.rightCollapsed}
-    <ColumnResizeHandle
-      title='Resize admin panel'
-      onpointerdown={event => beginResize('right', event)}
-    />
-
-    <div
-      class='h-full min-h-0 shrink-0 overflow-hidden'
-      style={`width:${rightPaneWidth}px;`}
-    >
-      <AdminColumn taskId={taskId} panel={panel as AdminPanel}>
-        {@render children()}
-      </AdminColumn>
+  {#if !workspaceMeasured}
+    <div class='absolute inset-0 flex items-center justify-center'>
+      <div class='flex items-center gap-3 rounded-[10px] border border-shell-border bg-shell-surface px-4 py-3 shadow-[0_8px_20px_rgba(15,23,42,0.04)]'>
+        <span class='relative flex size-2.5'>
+          <span class='absolute inline-flex h-full w-full animate-ping rounded-full bg-brand/35'></span>
+          <span class='relative inline-flex size-2.5 rounded-full bg-brand'></span>
+        </span>
+        <span class='text-sm text-muted-foreground'>{t('workspace_loading')}</span>
+      </div>
     </div>
   {/if}
 </section>

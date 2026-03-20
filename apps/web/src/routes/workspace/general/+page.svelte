@@ -1,9 +1,9 @@
 <script lang='ts'>
+  import { page } from '$app/state'
   import { translate as t, translateLocaleName, translateRuleCachePolicy, translateTaskStatus, translateThemePreference } from '$lib/i18n'
   import { appShell, type TaskStatus } from '$lib/stores/app-shell'
 
-  let { taskId } = $props<{ taskId: string }>()
-
+  const taskId = $derived(page.url.searchParams.get('taskId') ?? $appShell.activeTaskId)
   const task = $derived($appShell.tasks.find(item => item.id === taskId) ?? null)
   const statusOptions = ['in_progress', 'completed', 'failed'] as const satisfies ReadonlyArray<TaskStatus>
 </script>

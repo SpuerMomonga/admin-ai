@@ -16,7 +16,7 @@
     const snapshot = appShell.getSnapshot()
 
     if (snapshot.isLoggedIn) {
-      await goto(buildWorkspacePath(snapshot.activeTaskId, snapshot.activePanel), { replaceState: true })
+      await goto(buildWorkspacePath(null, snapshot.activePanel), { replaceState: true })
     }
   })
 
@@ -24,7 +24,7 @@
     appShell.login(account)
 
     const snapshot = appShell.getSnapshot()
-    await goto(buildWorkspacePath(snapshot.activeTaskId, snapshot.activePanel))
+    await goto(buildWorkspacePath(null, snapshot.activePanel))
   }
 </script>
 

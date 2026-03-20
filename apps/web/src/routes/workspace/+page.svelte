@@ -13,7 +13,7 @@
       return
     }
 
-    await goto(buildWorkspacePath(snapshot.activeTaskId, snapshot.activePanel), { replaceState: true })
+    await goto(buildWorkspacePath(null, snapshot.activePanel), { replaceState: true })
   })
 </script>
 

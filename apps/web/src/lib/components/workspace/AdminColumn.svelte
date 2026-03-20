@@ -6,7 +6,7 @@
   import { adminPanels, appShell, buildWorkspacePath, type AdminPanel } from '$lib/stores/app-shell'
   import { BookOpenText, Cog, Layers3, PanelRightClose, PanelRightOpen, ShieldCheck, UserRound } from '@lucide/svelte'
 
-  let { taskId, panel, children } = $props<{ taskId: string, panel: AdminPanel, children?: Snippet }>()
+  let { taskId, panel, children } = $props<{ taskId: string | null, panel: AdminPanel, children?: Snippet }>()
 
   const panelIcons: Record<AdminPanel, typeof Cog> = {
     general: Cog,

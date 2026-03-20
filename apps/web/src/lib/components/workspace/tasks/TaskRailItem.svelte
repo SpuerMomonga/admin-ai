@@ -84,10 +84,9 @@
       <span class='truncate text-sm font-medium text-foreground'>{task.title}</span>
     </div>
 
-    <div class='mt-1.5 flex items-center justify-between gap-2 pl-4 pr-8 text-[11px] text-muted-foreground'>
-      <span class='min-w-0 truncate'>
-        {t('tasks_title')} · {translateTaskStatus(task.status)}
-      </span>
+    <div class='mt-1.5 flex items-center gap-1 pl-4 pr-8 text-[11px] text-muted-foreground'>
+      <span class='shrink-0'>{translateTaskStatus(task.status)}</span>
+      <span aria-hidden='true' class='shrink-0 text-[12px] leading-none text-muted-foreground/80'>•</span>
       <span class='shrink-0'>{formatTime(task.updatedAt)}</span>
     </div>
   {/if}

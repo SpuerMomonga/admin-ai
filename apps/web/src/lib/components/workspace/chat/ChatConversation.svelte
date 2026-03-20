@@ -1,14 +1,20 @@
 <script lang='ts'>
+  import { goto } from '$app/navigation'
   import { browser } from '$app/environment'
   import { translate as t } from '$lib/i18n'
-  import { appShell } from '$lib/stores/app-shell'
+  import { appShell, buildWorkspacePath, type AdminPanel } from '$lib/stores/app-shell'
   import { Tooltip } from '@admin-ai/ui'
   import { Check, Copy, ThumbsDown, ThumbsUp } from '@lucide/svelte'
 
-  let { taskId } = $props<{ taskId: string }>()
+  let { taskId, panel } = $props<{ taskId: string | null, panel: AdminPanel }>()
   let copiedMessageId = $state<string | null>(null)
 
   const activeTask = $derived($appShell.tasks.find(task => task.id === taskId) ?? null)
+  const starterSuggestions = [
+    t('workspace_empty_prompt_one'),
+    t('workspace_empty_prompt_two'),
+    t('workspace_empty_prompt_three'),
+  ]
 
   function formatTime(value: string) {
     return new Intl.DateTimeFormat($appShell.locale, {
@@ -37,6 +43,19 @@
       copiedMessageId = null
     }
   }
+
+  async function submitSuggestion(prompt: string) {
+    const nextPrompt = prompt.trim()
+
+    if (nextPrompt.length === 0) {
+      return
+    }
+
+    const nextTaskId = appShell.createTask()
+    appShell.setTaskDraft(nextTaskId, nextPrompt)
+    appShell.submitTaskDraft(nextTaskId)
+    await goto(buildWorkspacePath(nextTaskId, panel))
+  }
 </script>
 
 <section class='flex min-h-0 flex-1 flex-col overflow-hidden'>
@@ -63,7 +82,7 @@
                 <Tooltip
                   content={t('upvote_message')}
                   class={`inline-flex size-6 items-center justify-center rounded-[6px] text-muted-foreground transition hover:bg-shell-muted-panel hover:text-foreground ${message.feedback === 'up' ? 'text-brand' : ''}`}
-                  onclick={() => appShell.setMessageFeedback(taskId, message.id, 'up')}
+                  onclick={() => taskId && appShell.setMessageFeedback(taskId, message.id, 'up')}
                 >
                   <ThumbsUp class='size-3.5' />
                 </Tooltip>
@@ -71,7 +90,7 @@
                 <Tooltip
                   content={t('downvote_message')}
                   class={`inline-flex size-6 items-center justify-center rounded-[6px] text-muted-foreground transition hover:bg-shell-muted-panel hover:text-foreground ${message.feedback === 'down' ? 'text-brand' : ''}`}
-                  onclick={() => appShell.setMessageFeedback(taskId, message.id, 'down')}
+                  onclick={() => taskId && appShell.setMessageFeedback(taskId, message.id, 'down')}
                 >
                   <ThumbsDown class='size-3.5' />
                 </Tooltip>
@@ -88,8 +107,24 @@
       {/each}
     </div>
   {:else}
-    <div class='flex flex-1 items-center justify-center px-6 text-sm text-muted-foreground'>
-      {t('tasks_empty')}
+    <div class='flex flex-1 items-center justify-center px-6 py-8'>
+      <div class='mx-auto flex w-full min-w-0 max-w-2xl flex-col items-center text-center'>
+        <h2 class='max-w-full px-4 text-3xl font-semibold tracking-tight text-foreground break-words sm:text-4xl'>
+          {t('workspace_empty_title')}
+        </h2>
+
+        <div class='mt-4 flex w-full min-w-0 flex-wrap justify-center gap-2'>
+          {#each starterSuggestions as suggestion}
+            <button
+              type='button'
+              class='shell-chip-button max-w-full whitespace-normal break-words text-center sm:whitespace-nowrap'
+              onclick={() => void submitSuggestion(suggestion)}
+            >
+              {suggestion}
+            </button>
+          {/each}
+        </div>
+      </div>
     </div>
   {/if}
 </section>

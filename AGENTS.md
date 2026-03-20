@@ -27,6 +27,7 @@
 - For the current product scope, locale switching should not be encoded into the URL. Persist the active locale in client state plus durable storage instead of locale-prefixed routes.
 - The current frontend locale set is `zh-CN` and `en`.
 - Workspace state should support both route-switch persistence and refresh recovery for task context, active admin panel, drafts, and user preferences.
+- Workspace `taskId` should live in the query string, for example `/workspace/general?taskId=task-101`; do not introduce a `[taskId]` path segment for workspace routes.
 - The initial admin-side routed panels are `general`, `account`, `models`, `knowledge`, and `rules`.
 - Right-side admin pages should use concrete SvelteKit file routes for each page instead of a single dynamic `[panel]` route, so the admin area can scale to many pages later.
 - The initial login page is a UI-only flow with account, password, remember-me, and a client-side transition into the workspace.
@@ -43,7 +44,9 @@
 - The initial chat input mode set is `conversation` and `operation`; keep the UI ready for later mode expansion without coupling to backend execution yet.
 - The initial user avatar menu contains profile, preferences, language, theme, and logout actions.
 - Header ownership is split by column: the center column top bar contains the new-task action and user avatar menu, while breadcrumbs, admin navigation, and similar page-level controls belong to the right admin column header.
-- Keep route files thin. Extract substantial admin page, task list, and chat UI code into dedicated components instead of concentrating many views in a single workspace component.
+- Admin management pages should live directly in their route files, not under `src/lib/components`.
+- Only split a route page when it exceeds roughly 300 lines, and keep any split files under the same route folder instead of moving them into `src/lib/components`.
+- Route-page code should go into `src/lib/components` only when it is shared across routes, cannot reasonably live in `packages/ui`, and would otherwise be duplicated.
 
 ## Backend notes
 
