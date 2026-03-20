@@ -1,5 +1,5 @@
 <script lang='ts'>
-  import { translate as t } from '$lib/i18n'
+  import { translate as t, translateLocaleName, translateRuleCachePolicy, translateTaskStatus, translateThemePreference } from '$lib/i18n'
   import { appShell, type TaskStatus } from '$lib/stores/app-shell'
 
   let { taskId } = $props<{ taskId: string }>()
@@ -12,19 +12,19 @@
   <div class='grid gap-3 lg:grid-cols-3'>
     <article class='shell-card'>
       <p class='shell-card-label'>{t('theme_label')}</p>
-      <h3 class='shell-card-title'>{t(`theme_${$appShell.themePreference}`)}</h3>
+      <h3 class='shell-card-title'>{translateThemePreference($appShell.themePreference)}</h3>
       <p class='shell-card-copy'>{t('general_theme_card')}</p>
     </article>
 
     <article class='shell-card'>
       <p class='shell-card-label'>{t('locale_label')}</p>
-      <h3 class='shell-card-title'>{t($appShell.locale === 'zh-CN' ? 'locale_zh_cn' : 'locale_en')}</h3>
+      <h3 class='shell-card-title'>{translateLocaleName($appShell.locale)}</h3>
       <p class='shell-card-copy'>{t('general_locale_card')}</p>
     </article>
 
     <article class='shell-card'>
       <p class='shell-card-label'>{t('rules_cache_label')}</p>
-      <h3 class='shell-card-title'>{$appShell.settings.rules.cachePolicy === 'session_and_reload' ? 'session + reload' : 'session only'}</h3>
+      <h3 class='shell-card-title'>{translateRuleCachePolicy($appShell.settings.rules.cachePolicy)}</h3>
       <p class='shell-card-copy'>{t('general_cache_card')}</p>
     </article>
   </div>
@@ -55,7 +55,7 @@
           <span>{t('general_task_status_label')}</span>
           <select class='shell-select' value={task.status} onchange={(event) => appShell.setTaskStatus(task.id, event.currentTarget.value as TaskStatus)}>
             {#each statusOptions as statusOption}
-              <option value={statusOption}>{t(`task_status_${statusOption}`)}</option>
+              <option value={statusOption}>{translateTaskStatus(statusOption)}</option>
             {/each}
           </select>
         </label>

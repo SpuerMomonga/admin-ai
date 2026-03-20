@@ -1,4 +1,6 @@
 <script lang='ts'>
+  import { translate as t } from '$lib/i18n'
+
   let {
     collapsed = false,
     showSubtitle = true,
@@ -15,7 +17,7 @@
     <div class='min-w-0'>
       <p class='truncate text-sm font-semibold tracking-tight text-foreground'>admin-ai</p>
       {#if showSubtitle}
-        <p class='truncate text-[11px] text-muted-foreground'>compact operations workspace</p>
+        <p class='truncate text-[11px] text-muted-foreground'>{t('app_logo_subtitle')}</p>
       {/if}
     </div>
   {/if}

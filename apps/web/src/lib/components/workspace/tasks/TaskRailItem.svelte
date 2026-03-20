@@ -1,7 +1,7 @@
 <script lang='ts'>
   import { browser } from '$app/environment'
   import { onMount } from 'svelte'
-  import { translate as t } from '$lib/i18n'
+  import { translate as t, translateTaskStatus } from '$lib/i18n'
   import type { TaskRecord, TaskStatus } from '$lib/stores/app-shell'
   import { Ellipsis, PencilLine, Trash2 } from '@lucide/svelte'
 
@@ -86,7 +86,7 @@
 
     <div class='mt-1.5 flex items-center justify-between gap-2 pl-4 pr-8 text-[11px] text-muted-foreground'>
       <span class='min-w-0 truncate'>
-        {t('tasks_title')}{t(`task_status_${task.status}`)}
+        {t('tasks_title')} · {translateTaskStatus(task.status)}
       </span>
       <span class='shrink-0'>{formatTime(task.updatedAt)}</span>
     </div>
@@ -97,8 +97,8 @@
     <button
       type='button'
       class='absolute right-2 top-1/2 inline-flex size-7 -translate-y-1/2 items-center justify-center rounded-[6px] text-muted-foreground transition hover:bg-shell-muted-panel hover:text-foreground'
-      title='Task actions'
-      aria-label='Task actions'
+      title={t('task_actions')}
+      aria-label={t('task_actions')}
       onclick={(event) => {
         event.stopPropagation()
         menuOpen = !menuOpen

@@ -1,4 +1,5 @@
 <script lang='ts'>
+  import type { AdminPanel } from '$lib/stores/app-shell'
   import { browser } from '$app/environment'
   import { goto } from '$app/navigation'
   import { page } from '$app/state'
@@ -6,7 +7,7 @@
   import ChatColumn from '$lib/components/workspace/ChatColumn.svelte'
   import ColumnResizeHandle from '$lib/components/workspace/ColumnResizeHandle.svelte'
   import TaskRail from '$lib/components/workspace/TaskRail.svelte'
-  import { appShell, resolveAdminPanelFromPathname, type AdminPanel } from '$lib/stores/app-shell'
+  import { appShell, resolveAdminPanelFromPathname } from '$lib/stores/app-shell'
 
   const { children } = $props()
   let containerElement = $state<HTMLElement | null>(null)
@@ -129,7 +130,7 @@
 <section
   bind:this={containerElement}
   bind:clientWidth={containerWidth}
-  class='workspace-shell flex h-[100dvh] w-full overflow-hidden'
+  class='workspace-shell flex h-dvh w-full overflow-hidden'
 >
   {#if !$appShell.leftCollapsed}
     <div
@@ -141,7 +142,7 @@
 
     <ColumnResizeHandle
       title='Resize task rail'
-      onpointerdown={(event) => beginResize('left', event)}
+      onpointerdown={event => beginResize('left', event)}
     />
   {/if}
 
@@ -152,7 +153,7 @@
   {#if !$appShell.rightCollapsed}
     <ColumnResizeHandle
       title='Resize admin panel'
-      onpointerdown={(event) => beginResize('right', event)}
+      onpointerdown={event => beginResize('right', event)}
     />
 
     <div

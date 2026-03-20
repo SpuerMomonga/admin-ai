@@ -2,7 +2,7 @@
   import { Tooltip } from '@admin-ai/ui'
   import type { Snippet } from 'svelte'
   import { goto } from '$app/navigation'
-  import { translate as t } from '$lib/i18n'
+  import { translate as t, translateAdminPanel } from '$lib/i18n'
   import { adminPanels, appShell, buildWorkspacePath, type AdminPanel } from '$lib/stores/app-shell'
   import { BookOpenText, Cog, Layers3, PanelRightClose, PanelRightOpen, ShieldCheck, UserRound } from '@lucide/svelte'
 
@@ -47,7 +47,7 @@
         <button
           type='button'
           class={`shell-icon-button ${panel === panelKey ? 'bg-brand text-brand-foreground shadow-[0_14px_28px_rgba(0,78,162,0.18)]' : ''}`}
-          title={t(`panel_${panelKey}`)}
+          title={translateAdminPanel(panelKey)}
           onclick={() => openPanel(panelKey)}
         >
           <Icon class='size-4' />
@@ -63,7 +63,7 @@
             <span>/</span>
             <span>{t('admin_label')}</span>
             <span>/</span>
-            <span class='font-medium text-foreground'>{t(`panel_${panel}`)}</span>
+            <span class='font-medium text-foreground'>{translateAdminPanel(panel)}</span>
           </nav>
           <h2 class='mt-2 text-lg font-semibold tracking-tight text-foreground'>{t('right_panel_title')}</h2>
         </div>
@@ -87,7 +87,7 @@
             onclick={() => openPanel(panelKey)}
           >
             <Icon class='size-4' />
-            <span>{t(`panel_${panelKey}`)}</span>
+            <span>{translateAdminPanel(panelKey)}</span>
           </button>
         {/each}
       </div>
@@ -96,7 +96,7 @@
         {#each $appShell.visitedPanels as visitedPanel}
           <div class={`inline-flex items-center gap-2 rounded-[8px] border px-3 py-2 text-xs font-medium transition ${panel === visitedPanel ? 'border-brand/35 bg-brand/10 text-brand' : 'border-shell-border bg-shell-muted-panel text-muted-foreground'}`}>
             <button type='button' class='transition hover:text-foreground' onclick={() => openPanel(visitedPanel)}>
-              {t(`panel_${visitedPanel}`)}
+              {translateAdminPanel(visitedPanel)}
             </button>
             {#if $appShell.visitedPanels.length > 1}
               <button type='button' class='text-muted-foreground transition hover:text-foreground' onclick={() => closePanel(visitedPanel)}>

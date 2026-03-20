@@ -1,5 +1,6 @@
 import { browser } from '$app/environment'
 import { writable } from 'svelte/store'
+import { m } from '$lib/paraglide/messages.js'
 import { getCurrentLocale, setAppLocale, type AppLocale } from '$lib/i18n'
 import { applyDocumentTheme, type ThemePreference } from '$lib/theme'
 
@@ -123,71 +124,78 @@ function createMessage(role: ChatMessage['role'], content: string, minutesAgo: n
   }
 }
 
-function createTaskRecord(id: string, index: number): TaskRecord {
+function createTaskRecord(id: string, index: number, locale: AppLocale = browser ? getCurrentLocale() : 'zh-CN'): TaskRecord {
+  const messageOptions = { locale }
+  const paddedIndex = String(index).padStart(2, '0')
+
   return {
     id,
-    title: `任务 ${String(index).padStart(2, '0')}`,
+    title: m.task_default_title({ index: paddedIndex }, messageOptions) as string,
     status: 'in_progress',
     updatedAt: buildTimestamp(index * 4),
-    summary: '等待进一步对话或操作指令。',
+    summary: m.task_default_summary({}, messageOptions) as string,
     mode: 'conversation',
     knowledgeBaseId: 'ops-playbook',
     draft: '',
     messages: [
-      createMessage('assistant', '任务上下文已准备，可以开始新的对话或操作编排。', index * 5),
+      createMessage('assistant', m.task_default_assistant_message({}, messageOptions) as string, index * 5),
     ],
   }
 }
 
-function createDefaultTasks(): TaskRecord[] {
+function createDefaultTasks(locale: AppLocale): TaskRecord[] {
+  const messageOptions = { locale }
+
   return [
     {
       id: 'task-101',
-      title: '设计运营控制台',
+      title: m.sample_task_one_title({}, messageOptions) as string,
       status: 'in_progress',
       updatedAt: buildTimestamp(10),
-      summary: '整理三栏工作台、主题、路由和缓存行为。',
+      summary: m.sample_task_one_summary({}, messageOptions) as string,
       mode: 'conversation',
       knowledgeBaseId: 'ops-playbook',
       draft: '',
       messages: [
-        createMessage('assistant', '已同步整体需求，当前优先搭建持久三栏壳子。', 18),
-        createMessage('user', '先收敛设计，再分批确认交互和路由。', 16),
+        createMessage('assistant', m.sample_task_one_assistant({}, messageOptions) as string, 18),
+        createMessage('user', m.sample_task_one_user({}, messageOptions) as string, 16),
       ],
     },
     {
       id: 'task-102',
-      title: '接入国际化与主题切换',
+      title: m.sample_task_two_title({}, messageOptions) as string,
       status: 'completed',
       updatedAt: buildTimestamp(84),
-      summary: '补齐语言切换、亮暗模式与品牌色 token。',
+      summary: m.sample_task_two_summary({}, messageOptions) as string,
       mode: 'operation',
       knowledgeBaseId: 'product-guides',
       draft: '',
       messages: [
-        createMessage('assistant', '建议采用 Paraglide 本地产物并持久化语言、主题偏好。', 96),
+        createMessage('assistant', m.sample_task_two_assistant({}, messageOptions) as string, 96),
       ],
     },
     {
       id: 'task-103',
-      title: '梳理知识库问答面板',
+      title: m.sample_task_three_title({}, messageOptions) as string,
       status: 'failed',
       updatedAt: buildTimestamp(220),
-      summary: '等待知识库数据结构与检索策略进一步确认。',
+      summary: m.sample_task_three_summary({}, messageOptions) as string,
       mode: 'conversation',
       knowledgeBaseId: 'security-manual',
       draft: '',
       messages: [
-        createMessage('assistant', '当前缺少真实索引和召回约束，先保留 UI 和状态模型。', 226),
+        createMessage('assistant', m.sample_task_three_assistant({}, messageOptions) as string, 226),
       ],
     },
   ]
 }
 
 function createDefaultState(): AppShellState {
+  const locale = browser ? getCurrentLocale() : 'zh-CN'
+
   return {
     isLoggedIn: false,
-    locale: browser ? getCurrentLocale() : 'zh-CN',
+    locale,
     themePreference: 'system',
     leftCollapsed: false,
     rightCollapsed: false,
@@ -198,7 +206,7 @@ function createDefaultState(): AppShellState {
     activeTaskId: 'task-101',
     activePanel: 'general',
     visitedPanels: ['general'],
-    tasks: createDefaultTasks(),
+    tasks: createDefaultTasks(locale),
     settings: {
       account: {
         displayName: 'SpuerMomonga',
@@ -208,7 +216,7 @@ function createDefaultState(): AppShellState {
       models: {
         primaryModel: 'GPT-5.4',
         operationModel: 'GPT-5.3-codex',
-        routingPolicy: '任务复杂度优先',
+        routingPolicy: m.models_routing_policy_complexity_first({}, { locale }) as string,
       },
       knowledge: {
         activeBaseId: 'ops-playbook',
@@ -360,16 +368,20 @@ function createTaskId() {
 function buildAssistantReply(state: AppShellState, task: TaskRecord, prompt: string) {
   const selectedBase = knowledgeBases.find(base => base.id === task.knowledgeBaseId)
   const locale = state.locale
+  const knowledgeBase = selectedBase?.badge ?? 'OPS'
 
   if (task.mode === 'operation') {
-    return locale === 'en'
-      ? `Operation plan drafted for "${task.title}". Knowledge base: ${selectedBase?.badge ?? 'OPS'}. Next step is to confirm the execution boundary for: ${prompt}`
-      : `已为「${task.title}」生成操作计划。当前知识库：${selectedBase?.badge ?? 'OPS'}。下一步建议确认执行边界：${prompt}`
+    return m.assistant_reply_operation({
+      title: task.title,
+      knowledgeBase,
+      prompt,
+    }, { locale }) as string
   }
 
-  return locale === 'en'
-    ? `Conversation context updated for "${task.title}". I will answer using the ${selectedBase?.badge ?? 'OPS'} knowledge base and keep the response compact.`
-    : `已更新「${task.title}」的会话上下文。我会基于 ${selectedBase?.badge ?? 'OPS'} 知识库继续回答，并保持紧凑输出。`
+  return m.assistant_reply_conversation({
+    title: task.title,
+    knowledgeBase,
+  }, { locale }) as string
 }
 
 function createAppShell() {
