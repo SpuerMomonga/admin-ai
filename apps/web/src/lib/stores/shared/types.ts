@@ -70,6 +70,7 @@ export interface SystemPreferencesState {
 export interface NavigationState {
   leftCollapsed: boolean
   rightCollapsed: boolean
+  adminSidebarCollapsed: boolean
   columnWidths: ColumnWidths
 }
 

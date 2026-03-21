@@ -132,6 +132,7 @@
     {#if splitAdminPath}
       <TooltipButton
         content={t('admin_tab_unsplit')}
+        side='left'
         class='shell-panel-toggle-button'
         aria-label={t('admin_tab_unsplit')}
         onclick={closeAdminSplit}
@@ -143,6 +144,7 @@
     {#if maximizedAdminPath}
       <TooltipButton
         content={t('admin_tab_restore')}
+        side='left'
         class='shell-panel-toggle-button'
         aria-label={t('admin_tab_restore')}
         onclick={restoreAdminPath}
@@ -153,6 +155,7 @@
 
     <TooltipButton
       content={t('collapse_right')}
+      side='left'
       class='shell-panel-toggle-button'
       aria-label={t('collapse_right')}
       onclick={toggleRightCollapsed}
@@ -165,6 +168,7 @@
 {#snippet refreshButton(path: string)}
   <TooltipButton
     content={t('admin_page_refresh')}
+    side='right'
     class='shell-panel-toggle-button'
     aria-label={t('admin_page_refresh')}
     onclick={() => refreshPage(path)}
@@ -321,6 +325,7 @@
   {:else}
     <TooltipButton
       content={t('expand_right')}
+      side='left'
       class='shell-panel-toggle-button'
       aria-label={t('expand_right')}
       onclick={toggleRightCollapsed}

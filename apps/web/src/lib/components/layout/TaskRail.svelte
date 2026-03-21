@@ -63,6 +63,7 @@
 
     <TooltipButton
       content={t('collapse_left')}
+      side='right'
       class='shell-panel-toggle-button'
       aria-label={t('collapse_left')}
       onclick={toggleLeftCollapsed}

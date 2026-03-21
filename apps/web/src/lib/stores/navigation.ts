@@ -34,6 +34,7 @@ function normalizeNavigationState(input: unknown): NavigationState {
   return {
     leftCollapsed: collapsedPanels.leftCollapsed,
     rightCollapsed: collapsedPanels.rightCollapsed,
+    adminSidebarCollapsed: Boolean(payload.adminSidebarCollapsed),
     columnWidths: {
       left: typeof payload.columnWidths?.left === 'number'
         ? clampWidth(payload.columnWidths.left, minDesktopLeftWidth, maxDesktopLeftWidth)
@@ -50,6 +51,7 @@ const initialState = readStoredState<NavigationState>(
   {
     leftCollapsed: false,
     rightCollapsed: false,
+    adminSidebarCollapsed: false,
     columnWidths: {
       left: 220,
       right: 720,
@@ -86,6 +88,13 @@ export function toggleRightCollapsed() {
       rightCollapsed: collapsedPanels.rightCollapsed,
     }
   })
+}
+
+export function toggleAdminSidebarCollapsed() {
+  store.update(state => ({
+    ...state,
+    adminSidebarCollapsed: !state.adminSidebarCollapsed,
+  }))
 }
 
 export function setLeftCollapsed(leftCollapsed: boolean) {

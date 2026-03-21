@@ -27,6 +27,7 @@
 
         <TooltipButton
           content={t('expand_left')}
+          side='right'
           class='shell-panel-toggle-button'
           aria-label={t('expand_left')}
           onclick={() => setLeftCollapsed(false)}
@@ -48,6 +49,7 @@
   <div class='flex shrink-0 items-center gap-2'>
     <TooltipButton
       content={t('new_task')}
+      side='left'
       class='shell-panel-toggle-button'
       aria-label={t('new_task')}
       onclick={createNewTask}
@@ -60,6 +62,7 @@
     {#if $navigationStore.rightCollapsed}
       <TooltipButton
         content={t('expand_right')}
+        side='left'
         class='shell-panel-toggle-button'
         aria-label={t('expand_right')}
         onclick={() => setRightCollapsed(false)}
