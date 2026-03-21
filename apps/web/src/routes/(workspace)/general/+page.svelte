@@ -23,7 +23,7 @@
     failed: 'border-amber-500/20 bg-amber-500/10 text-amber-700 dark:text-amber-300',
   }
 
-  const taskId = $derived(page.url.searchParams.get('taskId') ?? $tasksStore.activeTaskId)
+  const taskId = $derived(page.url.searchParams.get('taskId'))
   const activeTask = $derived($tasksStore.tasks.find(item => item.id === taskId) ?? null)
   const activeKnowledgeBase = $derived(
     activeTask ? (knowledgeBases.find(base => base.id === activeTask.knowledgeBaseId) ?? null) : null,

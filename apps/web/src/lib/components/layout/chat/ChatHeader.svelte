@@ -3,9 +3,10 @@
   import AppLogo from '$lib/components/AppLogo.svelte'
   import TooltipButton from '$lib/components/ui/tooltip-button.svelte'
   import { buildWorkspacePath } from '$lib/stores/admin-tabs'
+  import { resetPendingTaskComposer } from '$lib/stores/conversation'
   import { translate as t } from '$lib/stores/i18n'
   import { navigationStore, setLeftCollapsed, setRightCollapsed } from '$lib/stores/navigation'
-  import { createTask as createTaskRecord, tasksStore } from '$lib/stores/tasks'
+  import { tasksStore } from '$lib/stores/tasks'
   import { MessageCirclePlus, PanelLeftOpen, PanelRightOpen } from '@lucide/svelte'
   import WorkspaceUserMenu from './WorkspaceUserMenu.svelte'
 
@@ -14,8 +15,8 @@
   const activeTask = $derived($tasksStore.tasks.find(task => task.id === taskId) ?? null)
 
   async function createNewTask() {
-    const nextTaskId = createTaskRecord()
-    await goto(buildWorkspacePath(nextTaskId, adminPath))
+    resetPendingTaskComposer()
+    await goto(buildWorkspacePath(null, adminPath))
   }
 </script>
 

@@ -8,6 +8,6 @@
 
 <section class='workspace-pane workspace-center-pane flex h-full min-h-0 min-w-0 flex-col overflow-hidden'>
   <ChatHeader {taskId} {adminPath} />
-  <ChatConversation {taskId} {adminPath} />
+  <ChatConversation {taskId} />
   <ChatComposer {taskId} {adminPath} />
 </section>

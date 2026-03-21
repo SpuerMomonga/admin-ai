@@ -5,6 +5,7 @@ export const storageKeys = {
   language: 'admin-ai.language.v1',
   themePreference: 'admin-ai.theme.v1',
   navigation: 'admin-ai.navigation.v1',
+  pendingTaskComposer: 'admin-ai.pending-task-composer.v1',
   adminTabs: 'admin-ai.admin-tabs.v1',
   tasks: 'admin-ai.tasks.v1',
   settings: 'admin-ai.settings.v1',

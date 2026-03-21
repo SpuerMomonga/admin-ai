@@ -13,27 +13,12 @@ function clampWidth(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max)
 }
 
-function normalizeCollapsedPanels(leftCollapsed: boolean, rightCollapsed: boolean) {
-  if (leftCollapsed && rightCollapsed) {
-    return {
-      leftCollapsed: false,
-      rightCollapsed: false,
-    }
-  }
-
-  return {
-    leftCollapsed,
-    rightCollapsed,
-  }
-}
-
 function normalizeNavigationState(input: unknown): NavigationState {
   const payload = input as Partial<NavigationState>
-  const collapsedPanels = normalizeCollapsedPanels(Boolean(payload.leftCollapsed), Boolean(payload.rightCollapsed))
 
   return {
-    leftCollapsed: collapsedPanels.leftCollapsed,
-    rightCollapsed: collapsedPanels.rightCollapsed,
+    leftCollapsed: Boolean(payload.leftCollapsed),
+    rightCollapsed: Boolean(payload.rightCollapsed),
     adminSidebarCollapsed: Boolean(payload.adminSidebarCollapsed),
     columnWidths: {
       left: typeof payload.columnWidths?.left === 'number'
@@ -70,22 +55,18 @@ export const navigationStore = store
 
 export function toggleLeftCollapsed() {
   store.update((state) => {
-    const collapsedPanels = normalizeCollapsedPanels(!state.leftCollapsed, state.rightCollapsed)
     return {
       ...state,
-      leftCollapsed: collapsedPanels.leftCollapsed,
-      rightCollapsed: collapsedPanels.rightCollapsed,
+      leftCollapsed: !state.leftCollapsed,
     }
   })
 }
 
 export function toggleRightCollapsed() {
   store.update((state) => {
-    const collapsedPanels = normalizeCollapsedPanels(state.leftCollapsed, !state.rightCollapsed)
     return {
       ...state,
-      leftCollapsed: collapsedPanels.leftCollapsed,
-      rightCollapsed: collapsedPanels.rightCollapsed,
+      rightCollapsed: !state.rightCollapsed,
     }
   })
 }
@@ -99,22 +80,18 @@ export function toggleAdminSidebarCollapsed() {
 
 export function setLeftCollapsed(leftCollapsed: boolean) {
   store.update((state) => {
-    const collapsedPanels = normalizeCollapsedPanels(leftCollapsed, state.rightCollapsed)
     return {
       ...state,
-      leftCollapsed: collapsedPanels.leftCollapsed,
-      rightCollapsed: collapsedPanels.rightCollapsed,
+      leftCollapsed,
     }
   })
 }
 
 export function setRightCollapsed(rightCollapsed: boolean) {
   store.update((state) => {
-    const collapsedPanels = normalizeCollapsedPanels(state.leftCollapsed, rightCollapsed)
     return {
       ...state,
-      leftCollapsed: collapsedPanels.leftCollapsed,
-      rightCollapsed: collapsedPanels.rightCollapsed,
+      rightCollapsed,
     }
   })
 }

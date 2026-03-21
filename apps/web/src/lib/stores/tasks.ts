@@ -6,9 +6,21 @@ import { createDefaultTasks, createTaskId, createTaskRecord, isTaskStatus, norma
 
 export type { TaskRecord, TaskStatus } from './shared/types'
 
+const titleWhitespacePattern = /\s+/g
+
 export interface TasksState {
   activeTaskId: string
   tasks: TaskRecord[]
+}
+
+interface CreateTaskOptions {
+  title?: string
+  mode?: TaskRecord['mode']
+  knowledgeBaseId?: string
+  draft?: string
+  summary?: string
+  status?: TaskStatus
+  messages?: TaskRecord['messages']
 }
 
 function normalizeTasksState(input: unknown): TasksState {
@@ -47,11 +59,23 @@ export function updateTasksState(mutator: (state: TasksState) => TasksState) {
   store.update(mutator)
 }
 
-export function createTask() {
+export function createTask(options: CreateTaskOptions = {}) {
   const nextId = createTaskId()
 
   store.update((state) => {
-    const nextTask = createTaskRecord(nextId, state.tasks.length + 1, getCurrentLocale())
+    const defaultTask = createTaskRecord(nextId, state.tasks.length + 1, getCurrentLocale())
+    const trimmedTitle = options.title?.replace(titleWhitespacePattern, ' ').trim()
+    const nextTask: TaskRecord = {
+      ...defaultTask,
+      title: trimmedTitle && trimmedTitle.length > 0 ? trimmedTitle : defaultTask.title,
+      mode: options.mode ?? defaultTask.mode,
+      knowledgeBaseId: options.knowledgeBaseId ?? defaultTask.knowledgeBaseId,
+      draft: options.draft ?? defaultTask.draft,
+      summary: options.summary ?? defaultTask.summary,
+      status: options.status ?? defaultTask.status,
+      messages: options.messages ?? defaultTask.messages,
+      updatedAt: new Date().toISOString(),
+    }
 
     return {
       ...state,

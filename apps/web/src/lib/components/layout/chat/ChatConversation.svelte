@@ -1,17 +1,15 @@
 <script lang='ts'>
   import { browser } from '$app/environment'
-  import { goto } from '$app/navigation'
   import { Button } from '$lib/components/ui/button'
   import { ScrollArea } from '$lib/components/ui/scroll-area'
   import TooltipButton from '$lib/components/ui/tooltip-button.svelte'
-  import { buildWorkspacePath } from '$lib/stores/admin-tabs'
-  import { setMessageFeedback, setTaskDraft, submitTaskDraft } from '$lib/stores/conversation'
+  import { setMessageFeedback, setPendingTaskDraft } from '$lib/stores/conversation'
   import { translate as t } from '$lib/stores/i18n'
   import { systemPreferencesStore } from '$lib/stores/preferences'
-  import { createTask, tasksStore } from '$lib/stores/tasks'
+  import { tasksStore } from '$lib/stores/tasks'
   import { Check, Copy, ThumbsDown, ThumbsUp } from '@lucide/svelte'
 
-  const { taskId, adminPath } = $props<{ taskId: string | null, adminPath: string }>()
+  const { taskId } = $props<{ taskId: string | null }>()
   let copiedMessageId = $state<string | null>(null)
 
   const activeTask = $derived($tasksStore.tasks.find(task => task.id === taskId) ?? null)
@@ -49,67 +47,62 @@
     }
   }
 
-  async function submitSuggestion(prompt: string) {
+  function applySuggestion(prompt: string) {
     const nextPrompt = prompt.trim()
 
     if (nextPrompt.length === 0) {
       return
     }
 
-    const nextTaskId = createTask()
-    setTaskDraft(nextTaskId, nextPrompt)
-    submitTaskDraft(nextTaskId)
-    await goto(buildWorkspacePath(nextTaskId, adminPath))
+    setPendingTaskDraft(nextPrompt)
   }
 </script>
 
 <section class='flex min-h-0 flex-1 flex-col overflow-hidden'>
   {#if activeTask}
     <ScrollArea class='min-h-0 flex-1' viewportClass='px-3 py-3' scrollbars='vertical'>
-      <div class='space-y-3'>
+      <div class='flex flex-col gap-3'>
         {#each activeTask.messages as message (message.id)}
-          <article class={`max-w-[86%] text-sm leading-6 ${message.role === 'assistant' ? 'text-foreground' : 'ml-auto rounded-[10px] bg-brand px-3 py-2.5 text-brand-foreground'}`}>
-            <p>{message.content}</p>
-            {#if message.role === 'assistant'}
-              <div class='mt-1.5 flex items-center gap-1 text-[11px] text-muted-foreground'>
-                <div class='flex items-center gap-0.5'>
-                  <TooltipButton
-                    content={t('copy_message')}
-                    class={`inline-flex size-6 items-center justify-center rounded-[6px] text-muted-foreground transition hover:bg-shell-muted-panel hover:text-foreground ${copiedMessageId === message.id ? 'text-brand' : ''}`}
-                    onclick={() => copyMessage(message.id, message.content)}
-                  >
-                    {#if copiedMessageId === message.id}
-                      <Check class='size-3.5' />
-                    {:else}
-                      <Copy class='size-3.5' />
-                    {/if}
-                  </TooltipButton>
+          <div class={`flex ${message.role === 'assistant' ? 'justify-start' : 'justify-end'}`}>
+            <article class={`text-sm leading-6 ${message.role === 'assistant' ? 'max-w-[86%] text-foreground' : 'w-fit max-w-[86%] rounded-[10px] bg-brand px-2.5 py-2 text-brand-foreground'}`}>
+              <p class='wrap-break-word whitespace-pre-wrap'>{message.content}</p>
+              {#if message.role === 'assistant'}
+                <div class='mt-1.5 flex items-center gap-1 text-[11px] text-muted-foreground'>
+                  <div class='flex items-center gap-0.5'>
+                    <TooltipButton
+                      content={t('copy_message')}
+                      class={`inline-flex size-6 items-center justify-center rounded-[6px] text-muted-foreground transition hover:bg-shell-muted-panel hover:text-foreground ${copiedMessageId === message.id ? 'text-brand' : ''}`}
+                      onclick={() => copyMessage(message.id, message.content)}
+                    >
+                      {#if copiedMessageId === message.id}
+                        <Check class='size-3.5' />
+                      {:else}
+                        <Copy class='size-3.5' />
+                      {/if}
+                    </TooltipButton>
 
-                  <TooltipButton
-                    content={t('upvote_message')}
-                    class={`inline-flex size-6 items-center justify-center rounded-[6px] text-muted-foreground transition hover:bg-shell-muted-panel hover:text-foreground ${message.feedback === 'up' ? 'text-brand' : ''}`}
-                    onclick={() => taskId && setMessageFeedback(taskId, message.id, 'up')}
-                  >
-                    <ThumbsUp class='size-3.5' />
-                  </TooltipButton>
+                    <TooltipButton
+                      content={t('upvote_message')}
+                      class={`inline-flex size-6 items-center justify-center rounded-[6px] text-muted-foreground transition hover:bg-shell-muted-panel hover:text-foreground ${message.feedback === 'up' ? 'text-brand' : ''}`}
+                      onclick={() => taskId && setMessageFeedback(taskId, message.id, 'up')}
+                    >
+                      <ThumbsUp class='size-3.5' />
+                    </TooltipButton>
 
-                  <TooltipButton
-                    content={t('downvote_message')}
-                    class={`inline-flex size-6 items-center justify-center rounded-[6px] text-muted-foreground transition hover:bg-shell-muted-panel hover:text-foreground ${message.feedback === 'down' ? 'text-brand' : ''}`}
-                    onclick={() => taskId && setMessageFeedback(taskId, message.id, 'down')}
-                  >
-                    <ThumbsDown class='size-3.5' />
-                  </TooltipButton>
+                    <TooltipButton
+                      content={t('downvote_message')}
+                      class={`inline-flex size-6 items-center justify-center rounded-[6px] text-muted-foreground transition hover:bg-shell-muted-panel hover:text-foreground ${message.feedback === 'down' ? 'text-brand' : ''}`}
+                      onclick={() => taskId && setMessageFeedback(taskId, message.id, 'down')}
+                    >
+                      <ThumbsDown class='size-3.5' />
+                    </TooltipButton>
+                  </div>
+
+                  <span class='ml-1'>{formatTime(message.createdAt)}</span>
                 </div>
-
-                <span class='ml-1'>{formatTime(message.createdAt)}</span>
-              </div>
-            {:else}
-              <p class='mt-1.5 text-[11px] text-brand-foreground/75'>
-                {formatTime(message.createdAt)}
-              </p>
-            {/if}
-          </article>
+              {/if}
+            </article>
+          </div>
         {/each}
       </div>
     </ScrollArea>
@@ -126,7 +119,7 @@
               variant='outline'
               size='sm'
               class='max-w-full whitespace-normal wrap-break-word text-center sm:whitespace-nowrap'
-              onclick={() => void submitSuggestion(suggestion)}
+              onclick={() => applySuggestion(suggestion)}
             >
               {suggestion}
             </Button>

@@ -5,15 +5,23 @@
   import { Button } from '$lib/components/ui/button'
   import { Textarea } from '$lib/components/ui/textarea'
   import { buildWorkspacePath } from '$lib/stores/admin-tabs'
-  import { knowledgeBases, setTaskDraft, setTaskKnowledgeBase, setTaskMode, submitTaskDraft } from '$lib/stores/conversation'
+  import {
+    knowledgeBases,
+    pendingTaskComposerStore,
+    resetPendingTaskComposer,
+    setPendingTaskDraft,
+    setPendingTaskKnowledgeBase,
+    setPendingTaskMode,
+    setTaskDraft,
+    setTaskKnowledgeBase,
+    setTaskMode,
+    submitTaskDraft,
+  } from '$lib/stores/conversation'
   import { translate as t } from '$lib/stores/i18n'
   import { createTask, tasksStore } from '$lib/stores/tasks'
   import { SendHorizontal } from '@lucide/svelte'
 
   const { taskId, adminPath } = $props<{ taskId: string | null, adminPath: string }>()
-  let starterPrompt = $state('')
-  let starterMode = $state<ChatMode>('conversation')
-  let starterKnowledgeBaseId = $state<string>(knowledgeBases[0]?.id ?? 'ops-playbook')
   const activeTask = $derived($tasksStore.tasks.find(task => task.id === taskId) ?? null)
   const modeOptions = $derived.by(() => [
     { value: 'conversation', label: t('conversation_mode') },
@@ -30,18 +38,21 @@
       return
     }
 
-    const prompt = starterPrompt.trim()
+    const prompt = $pendingTaskComposerStore.draft.trim()
 
     if (prompt.length === 0) {
       return
     }
 
-    const nextTaskId = createTask()
-    setTaskMode(nextTaskId, starterMode)
-    setTaskKnowledgeBase(nextTaskId, starterKnowledgeBaseId)
+    const nextTaskId = createTask({
+      title: prompt,
+      mode: $pendingTaskComposerStore.mode,
+      knowledgeBaseId: $pendingTaskComposerStore.knowledgeBaseId,
+      messages: [],
+    })
     setTaskDraft(nextTaskId, prompt)
     submitTaskDraft(nextTaskId)
-    starterPrompt = ''
+    resetPendingTaskComposer()
     await goto(buildWorkspacePath(nextTaskId, adminPath))
   }
 
@@ -112,10 +123,10 @@
     <div class='rounded-[10px] border border-shell-border bg-shell-surface px-3 py-3 shadow-[0_6px_18px_rgba(15,23,42,0.04)]'>
       <Textarea
         class='min-h-18 resize-none border-0 bg-transparent px-0 py-0 shadow-none focus-visible:ring-0'
-        value={starterPrompt}
+        value={$pendingTaskComposerStore.draft}
         placeholder={t('composer_placeholder')}
         onkeydown={handleKeydown}
-        oninput={event => starterPrompt = event.currentTarget.value}
+        oninput={event => setPendingTaskDraft(event.currentTarget.value)}
       />
 
       <div class='mt-3 flex items-center justify-between gap-3'>
@@ -127,9 +138,10 @@
               contentClass='min-w-[112px]'
               size='sm'
               plainWhenSelected={true}
-              bind:value={starterMode}
+              value={$pendingTaskComposerStore.mode}
               options={modeOptions}
               placeholder={t('active_mode')}
+              onValueChange={value => setPendingTaskMode(value as ChatMode)}
             />
           </div>
 
@@ -140,9 +152,10 @@
               contentClass='min-w-[92px]'
               size='sm'
               plainWhenSelected={true}
-              bind:value={starterKnowledgeBaseId}
+              value={$pendingTaskComposerStore.knowledgeBaseId}
               options={knowledgeBaseOptions}
               placeholder={t('knowledge_base_label')}
+              onValueChange={value => setPendingTaskKnowledgeBase(value)}
             />
           </div>
         </div>

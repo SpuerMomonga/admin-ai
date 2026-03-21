@@ -18,7 +18,8 @@
   let containerWidth = $state(0)
 
   const minDesktopLeftWidth = 180
-  const minDesktopRightWidth = 280
+  const minDesktopRightWidth = 360
+  const rightCollapseThreshold = 400
   const desktopMinMiddleWidth = 420
   const desktopHandleWidth = 12
 
@@ -51,6 +52,15 @@
     return Math.min(Math.max(value, min), max)
   }
 
+  function clampCollapsiblePaneWidth(value: number, preferredMinWidth: number, maxAvailableWidth: number) {
+    if (maxAvailableWidth <= 0) {
+      return 0
+    }
+
+    const minWidth = Math.min(preferredMinWidth, maxAvailableWidth)
+    return clamp(value, minWidth, maxAvailableWidth)
+  }
+
   const workspaceMeasured = $derived(containerWidth > 0)
   const visibleHandleCount = $derived(Number(!$navigationStore.leftCollapsed) + Number(!$navigationStore.rightCollapsed))
   const usableWidth = $derived(Math.max(containerWidth - desktopHandleWidth * visibleHandleCount, 0))
@@ -60,7 +70,7 @@
     }
 
     const maxLeft = Math.min(420, usableWidth - ($navigationStore.rightCollapsed ? 0 : $navigationStore.columnWidths.right) - desktopMinMiddleWidth)
-    return clamp($navigationStore.columnWidths.left, 180, Math.max(180, maxLeft))
+    return clamp($navigationStore.columnWidths.left, minDesktopLeftWidth, Math.max(minDesktopLeftWidth, maxLeft))
   })
   const rightPaneWidth = $derived.by(() => {
     if ($navigationStore.rightCollapsed) {
@@ -69,7 +79,7 @@
 
     const leftWidth = $navigationStore.leftCollapsed ? 0 : leftPaneWidth
     const maxRight = Math.min(usableWidth * 0.8, usableWidth - leftWidth - desktopMinMiddleWidth)
-    return clamp($navigationStore.columnWidths.right, 280, Math.max(280, maxRight))
+    return clampCollapsiblePaneWidth($navigationStore.columnWidths.right, minDesktopRightWidth, maxRight)
   })
 
   function beginResize(side: 'left' | 'right', event: PointerEvent) {
@@ -81,9 +91,8 @@
 
     const startX = event.clientX
     const snapshot = getNavigationSnapshot()
-    const { columnWidths } = snapshot
-    const startLeft = columnWidths.left
-    const startRight = columnWidths.right
+    const startLeft = snapshot.leftCollapsed ? 0 : leftPaneWidth
+    const startRight = snapshot.rightCollapsed ? 0 : rightPaneWidth
     const activeHandleCount = Number(!snapshot.leftCollapsed) + Number(!snapshot.rightCollapsed)
     const totalWidth = containerElement.getBoundingClientRect().width - desktopHandleWidth * activeHandleCount
 
@@ -99,22 +108,28 @@
         }
 
         const maxLeft = Math.min(420, totalWidth - startRight - desktopMinMiddleWidth)
+
         setLeftCollapsed(false)
-        setColumnWidth('left', clamp(attemptedLeftWidth, minDesktopLeftWidth, maxLeft))
+        setColumnWidth('left', clamp(attemptedLeftWidth, minDesktopLeftWidth, Math.max(minDesktopLeftWidth, maxLeft)))
         return
       }
 
-      const currentLeftWidth = getNavigationSnapshot().leftCollapsed ? 0 : startLeft
+      const currentLeftWidth = getNavigationSnapshot().leftCollapsed ? 0 : leftPaneWidth
       const maxRight = Math.min(totalWidth * 0.8, totalWidth - currentLeftWidth - desktopMinMiddleWidth)
       const attemptedRightWidth = startRight - delta
 
-      if (attemptedRightWidth < minDesktopRightWidth) {
+      if (attemptedRightWidth < rightCollapseThreshold) {
+        setRightCollapsed(true)
+        return
+      }
+
+      if (maxRight <= 0) {
         setRightCollapsed(true)
         return
       }
 
       setRightCollapsed(false)
-      const nextRightWidth = clamp(attemptedRightWidth, minDesktopRightWidth, maxRight)
+      const nextRightWidth = clampCollapsiblePaneWidth(attemptedRightWidth, minDesktopRightWidth, maxRight)
 
       setColumnWidth('right', nextRightWidth)
 

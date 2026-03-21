@@ -7,10 +7,11 @@
   import { ScrollArea } from '$lib/components/ui/scroll-area'
   import TooltipButton from '$lib/components/ui/tooltip-button.svelte'
   import { buildWorkspacePath } from '$lib/stores/admin-tabs'
+  import { resetPendingTaskComposer } from '$lib/stores/conversation'
   import { translate as t } from '$lib/stores/i18n'
   import { navigationStore, toggleLeftCollapsed } from '$lib/stores/navigation'
   import { systemPreferencesStore } from '$lib/stores/preferences'
-  import { createTask as createTaskRecord, deleteTask as deleteTaskRecord, renameTask, tasksStore } from '$lib/stores/tasks'
+  import { deleteTask as deleteTaskRecord, renameTask, tasksStore } from '$lib/stores/tasks'
   import { CirclePlus, PanelLeftClose } from '@lucide/svelte'
 
   const { taskId, adminPath } = $props<{ taskId: string | null, adminPath: string }>()
@@ -22,8 +23,8 @@
   }
 
   async function createNewTask() {
-    const nextTaskId = createTaskRecord()
-    await goto(buildWorkspacePath(nextTaskId, adminPath))
+    resetPendingTaskComposer()
+    await goto(buildWorkspacePath(null, adminPath))
   }
 
   function startRenameTask(taskId: string, currentTitle: string) {
