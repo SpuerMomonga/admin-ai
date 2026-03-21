@@ -17,7 +17,7 @@
 
 - `apps/web` currently behaves as a pure SPA-style client app. Do not introduce SSR-dependent behavior unless explicitly required.
 - `apps/web` owns the UI layer directly. Route-agnostic components should live under `apps/web/src/lib/components/ui`.
-- `apps/web` uses local `shadcn-svelte` components configured through `apps/web/components.json`. Prefer those components before introducing bespoke primitives.
+- `apps/web` uses local `shadcn-svelte` components configured through `apps/web/components.json`. If a page or interaction appears to need a reusable UI primitive, read `.codex/skills/shadcn-svelte-component-guide/SKILL.md` before writing custom markup or wrappers.
 - `apps/web/src/routes/layout.css` is the Tailwind entry and the source of app-wide design tokens.
 - User-facing copy in `apps/web` must go through `@inlang/paraglide-js`; do not introduce a second i18n path for route text, menus, breadcrumbs, or shell actions.
 - Theme tokens should be defined with Tailwind `@theme` in `apps/web/src/routes/layout.css`; the console brand primary is `#004EA2`.
@@ -49,8 +49,8 @@
 - Admin management pages should live directly in their route files, not under `src/lib/components`.
 - Only split a route page when it exceeds roughly 300 lines, and keep split files under the same route folder.
 - Put route-page code into `src/lib/components` only when it is shared across routes, cannot reasonably live in `src/lib/components/ui`, and would otherwise be duplicated.
-- Prefer local `shadcn-svelte` components in `apps/web/src/lib/components/ui` before adding one-off buttons, inputs, cards, menus, tooltips, or selects.
-- Add bespoke UI primitives only when the existing `shadcn-svelte` component set is genuinely insufficient for the interaction or visual requirement.
+- Before adding one-off buttons, inputs, cards, menus, tooltips, tables, tabs, dialogs, date and time pickers, navigation, or shell primitives, consult `.codex/skills/shadcn-svelte-component-guide/references/component-catalog.md` and decide whether an existing or addable `shadcn-svelte` component fits.
+- Add bespoke UI primitives only when that skill review shows the official `shadcn-svelte` catalog is insufficient for the required interaction, accessibility model, or visual structure.
 
 ## Backend rules
 
