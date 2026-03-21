@@ -17,6 +17,7 @@ export interface MenuItemType {
   label: MenuRenderable
   icon?: MenuIcon
   title?: string
+  clickable?: boolean
   disabled?: boolean
   danger?: boolean
   extra?: MenuRenderable
@@ -32,6 +33,7 @@ export interface SubMenuType {
   label: MenuRenderable
   icon?: MenuIcon
   title?: string
+  clickable?: boolean
   disabled?: boolean
   children: ItemType[]
   popupClassName?: string

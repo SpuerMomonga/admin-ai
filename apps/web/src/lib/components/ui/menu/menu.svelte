@@ -148,6 +148,10 @@
     return source ? source.charAt(0).toLocaleUpperCase() : '?'
   }
 
+  function isItemClickable(item: MenuItemType | SubMenuType) {
+    return item.clickable ?? true
+  }
+
   function isLeafItemSelected(itemKey: string) {
     return resolvedSelectedKeys.includes(itemKey)
   }
@@ -417,44 +421,72 @@
     })
   }
 
-  function getLeafButtonClass(selected: boolean, level: number, collapsed = false) {
+  function getLeafButtonClass(selected: boolean, collapsed = false, clickable = true) {
     if (collapsed) {
       return cn(
         'relative inline-flex size-7 shrink-0 appearance-none items-center justify-center rounded-[8px] border border-transparent bg-transparent p-0 shadow-none outline-none transition-colors select-none focus-visible:border-transparent focus-visible:ring-0',
         selected
           ? 'bg-brand/10 text-brand'
-          : 'text-muted-foreground hover:bg-brand/8 hover:text-foreground',
-        theme === 'dark' && !selected ? 'text-slate-300 hover:bg-white/8 hover:text-white' : '',
+          : clickable
+          ? 'text-muted-foreground hover:bg-brand/8 hover:text-foreground'
+          : 'text-muted-foreground hover:bg-brand/6 hover:text-foreground',
+        theme === 'dark' && !selected
+          ? clickable
+            ? 'text-slate-300 hover:bg-white/8 hover:text-white'
+            : 'text-slate-300 hover:bg-white/8 hover:text-white'
+          : '',
       )
     }
 
     return cn(
-      buttonVariants({ variant: selected ? 'secondary' : 'ghost', size: 'sm' }),
+      buttonVariants({ variant: clickable && selected ? 'secondary' : 'ghost', size: 'sm' }),
       `h-8 rounded-[7px] text-[12px] font-medium ${mode === 'horizontal' ? 'justify-center px-2.5' : 'w-full justify-start px-2'} ${selected ? 'bg-brand/10 text-brand' : 'text-muted-foreground'}`,
-      mode !== 'horizontal' && !collapsed && level > 0 ? 'pl-3' : '',
-      theme === 'dark' && !selected ? 'text-slate-300 hover:bg-white/8 hover:text-white' : '',
+      !clickable
+        ? selected
+          ? 'hover:bg-brand/10 hover:text-brand active:translate-y-0'
+          : 'hover:bg-brand/6 hover:text-foreground active:translate-y-0'
+        : '',
+      theme === 'dark' && !selected
+        ? clickable
+          ? 'text-slate-300 hover:bg-white/8 hover:text-white'
+          : 'text-slate-300 hover:bg-white/8 hover:text-white active:translate-y-0'
+        : '',
     )
   }
 
-  function getSubMenuTriggerClass(active: boolean, open: boolean, level: number, popup = false, collapsed = false) {
+  function getSubMenuTriggerClass(active: boolean, open: boolean, popup = false, collapsed = false, clickable = true) {
     if (collapsed) {
       return cn(
         'relative inline-flex size-7 shrink-0 appearance-none items-center justify-center rounded-[8px] border border-transparent bg-transparent p-0 shadow-none outline-none transition-colors select-none focus-visible:border-transparent focus-visible:ring-0',
         active
           ? 'bg-brand/10 text-brand'
-          : open
+          : clickable && open
           ? 'bg-brand/8 text-foreground'
-          : 'text-muted-foreground hover:bg-brand/8 hover:text-foreground',
-        theme === 'dark' && !active && !open ? 'text-slate-300 hover:bg-white/8 hover:text-white' : '',
+          : clickable
+          ? 'text-muted-foreground hover:bg-brand/8 hover:text-foreground'
+          : 'text-muted-foreground hover:bg-brand/6 hover:text-foreground',
+        theme === 'dark' && !active && !(clickable && open)
+          ? clickable
+            ? 'text-slate-300 hover:bg-white/8 hover:text-white'
+            : 'text-slate-300 hover:bg-white/8 hover:text-white'
+          : '',
       )
     }
 
     return cn(
-      buttonVariants({ variant: active || open ? 'secondary' : 'ghost', size: 'sm' }),
-      `h-8 rounded-[7px] text-[12px] font-medium ${mode === 'horizontal' && popup ? 'px-2.5' : 'w-full px-2'} justify-between ${active || open ? 'bg-brand/6 text-foreground' : 'text-muted-foreground'}`,
-      mode !== 'horizontal' && !collapsed && !popup && level > 0 ? 'pl-3' : '',
+      buttonVariants({ variant: clickable && (active || open) ? 'secondary' : 'ghost', size: 'sm' }),
+      `h-8 rounded-[7px] text-[12px] font-medium ${mode === 'horizontal' && popup ? 'px-2.5' : 'w-full px-2'} justify-between ${clickable ? (active || open ? 'bg-brand/6 text-foreground' : 'text-muted-foreground') : (active ? 'bg-brand/10 text-brand' : 'text-muted-foreground')}`,
       mode === 'horizontal' && !collapsed ? 'justify-center' : '',
-      theme === 'dark' && !(active || open) ? 'text-slate-300 hover:bg-white/8 hover:text-white' : '',
+      !clickable
+        ? active
+          ? 'hover:bg-brand/10 hover:text-brand active:translate-y-0'
+          : 'hover:bg-brand/6 hover:text-foreground active:translate-y-0'
+        : '',
+      theme === 'dark' && !(clickable ? (active || open) : active)
+        ? clickable
+          ? 'text-slate-300 hover:bg-white/8 hover:text-white'
+          : 'text-slate-300 hover:bg-white/8 hover:text-white active:translate-y-0'
+        : '',
     )
   }
 
@@ -648,10 +680,11 @@
     {:else if isSubMenuType(item)}
       {@const open = isInlineSubMenuOpen(item.key)}
       {@const active = submenuContainsSelected(item)}
+      {@const clickable = isItemClickable(item)}
       <div class='grid gap-1'>
         <button
           type='button'
-          class={getSubMenuTriggerClass(active, open, level)}
+          class={getSubMenuTriggerClass(active, open, false, false, clickable)}
           style={`padding-inline-start:${8 + level * inlineIndent}px;`}
           disabled={item.disabled}
           onclick={(event) => {
@@ -673,16 +706,17 @@
         </button>
 
         {#if open}
-          <div class={cn('grid gap-1', level === 0 ? 'ml-2 border-l border-shell-border/70 pl-2' : 'ml-2 border-l border-shell-border/50 pl-2')}>
+          <div class={cn('grid gap-1', level === 0 ? 'ml-1.5 border-l border-shell-border/70 pl-1.5' : 'ml-1.5 border-l border-shell-border/50 pl-1.5')}>
             {@render renderInlineNodes(item.children, level + 1, [item.key, ...ancestorKeys])}
           </div>
         {/if}
       </div>
     {:else}
       {@const selected = isLeafItemSelected(item.key)}
+      {@const clickable = isItemClickable(item)}
       <button
         type='button'
-        class={getLeafButtonClass(selected, level)}
+        class={getLeafButtonClass(selected, false, clickable)}
         style={`padding-inline-start:${8 + level * inlineIndent}px;`}
         disabled={item.disabled}
         onclick={event => handleLeafClick(item, [item.key, ...ancestorKeys], event as MouseEvent)}
@@ -717,10 +751,11 @@
     {@const active = submenuContainsSelected(item)}
     {@const rootPopupOpen = Boolean(rootPopupOpenByKey[item.key])}
     {@const collapsed = isCollapsedInlineMode}
+    {@const clickable = isItemClickable(item)}
     {#if triggerSubMenuAction === 'hover'}
       <button
         type='button'
-        class={getSubMenuTriggerClass(active, rootPopupOpen, 0, true, collapsed)}
+        class={getSubMenuTriggerClass(active, rootPopupOpen, true, collapsed, clickable)}
         data-menu-root-popup={item.key}
         aria-label={getItemTitle(item)}
         disabled={item.disabled}
@@ -759,7 +794,7 @@
         }}
       >
         <DropdownMenu.Trigger
-          class={getSubMenuTriggerClass(active, rootPopupOpen, 0, true, collapsed)}
+          class={getSubMenuTriggerClass(active, rootPopupOpen, true, collapsed, clickable)}
           data-menu-root-popup={item.key}
           aria-label={getItemTitle(item)}
           disabled={item.disabled}
@@ -804,10 +839,11 @@
     {/if}
   {:else if isCollapsedInlineMode}
     {@const selected = isLeafItemSelected(item.key)}
+    {@const clickable = isItemClickable(item)}
     {#if tooltip === false}
       <button
         type='button'
-        class={getLeafButtonClass(selected, 0, true)}
+        class={getLeafButtonClass(selected, true, clickable)}
         aria-label={getItemTitle(item)}
         disabled={item.disabled}
         onclick={event => handleLeafClick(item, [item.key], event as MouseEvent)}
@@ -823,7 +859,7 @@
         content={getItemTitle(item)}
         side={tooltip.side ?? 'right'}
         sideOffset={tooltip.sideOffset ?? 10}
-        class={getLeafButtonClass(selected, 0, true)}
+        class={getLeafButtonClass(selected, true, clickable)}
         aria-label={getItemTitle(item)}
         onclick={event => handleLeafClick(item, [item.key], event as MouseEvent)}
       >
@@ -836,9 +872,10 @@
     {/if}
   {:else}
     {@const selected = isLeafItemSelected(item.key)}
+    {@const clickable = isItemClickable(item)}
     <button
       type='button'
-      class={getLeafButtonClass(selected, 0)}
+      class={getLeafButtonClass(selected, false, clickable)}
       disabled={item.disabled}
       onclick={event => handleLeafClick(item, [item.key], event as MouseEvent)}
     >

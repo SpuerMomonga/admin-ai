@@ -26,6 +26,7 @@ export interface AdminMenuNode {
   titleKey: TranslationKey
   icon?: AdminMenuIconKey
   path?: string
+  clickable?: boolean
   children?: AdminMenuNode[]
 }
 

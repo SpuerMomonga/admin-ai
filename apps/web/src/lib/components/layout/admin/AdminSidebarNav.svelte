@@ -23,7 +23,7 @@
 
   let expandedIds = $state<string[]>([])
   let syncedActivePath = $state<string | null>(null)
-  const menuItems = $derived(buildAdminMenuItems(nodes))
+  const menuItems = $derived(buildAdminMenuItems(nodes, { clickable: false }))
 
   function collectAncestors(path: string, menuNodes: ReadonlyArray<AdminMenuNode>, trail: string[] = []): string[] | null {
     for (const node of menuNodes) {
@@ -62,6 +62,7 @@
       items={menuItems}
       mode='inline'
       inlineCollapsed={$navigationStore.adminSidebarCollapsed}
+      inlineIndent={11}
       openKeys={expandedIds}
       selectedKeys={[activePath]}
       tooltip={{

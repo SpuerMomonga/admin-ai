@@ -19,9 +19,18 @@ const iconMap: Record<AdminMenuIconKey, typeof Columns2> = {
   settings: Settings2,
 }
 
-function toMenuItem(node: AdminMenuNode): ItemType {
+interface BuildAdminMenuItemsOptions {
+  clickable?: boolean
+}
+
+function resolveClickable(node: AdminMenuNode, options: BuildAdminMenuItemsOptions) {
+  return node.clickable ?? options.clickable ?? true
+}
+
+function toMenuItem(node: AdminMenuNode, options: BuildAdminMenuItemsOptions): ItemType {
   const label = t(node.titleKey)
   const icon = node.icon ? iconMap[node.icon] : undefined
+  const clickable = resolveClickable(node, options)
 
   if (node.children?.length) {
     return {
@@ -29,7 +38,8 @@ function toMenuItem(node: AdminMenuNode): ItemType {
       label,
       title: label,
       icon,
-      children: node.children.map(toMenuItem),
+      clickable,
+      children: node.children.map(child => toMenuItem(child, options)),
     }
   }
 
@@ -38,9 +48,10 @@ function toMenuItem(node: AdminMenuNode): ItemType {
     label,
     title: label,
     icon,
+    clickable,
   }
 }
 
-export function buildAdminMenuItems(nodes: ReadonlyArray<AdminMenuNode>) {
-  return nodes.map(toMenuItem)
+export function buildAdminMenuItems(nodes: ReadonlyArray<AdminMenuNode>, options: BuildAdminMenuItemsOptions = {}) {
+  return nodes.map(node => toMenuItem(node, options))
 }
