@@ -4,6 +4,7 @@
   import RenameTaskDialog from '$lib/components/layout/tasks/RenameTaskDialog.svelte'
   import TaskRailItem from '$lib/components/layout/tasks/TaskRailItem.svelte'
   import { Button } from '$lib/components/ui/button'
+  import { ScrollArea } from '$lib/components/ui/scroll-area'
   import TooltipButton from '$lib/components/ui/tooltip-button.svelte'
   import { buildWorkspacePath } from '$lib/stores/admin-tabs'
   import { translate as t } from '$lib/stores/i18n'
@@ -66,7 +67,7 @@
       aria-label={t('collapse_left')}
       onclick={toggleLeftCollapsed}
     >
-      <PanelLeftClose class='size-[18px]' />
+      <PanelLeftClose class='size-4.5' />
     </TooltipButton>
   </div>
 
@@ -92,7 +93,7 @@
     {/if}
   </div>
 
-  <div class='mt-3 min-h-0 flex-1 overflow-y-auto pr-1 no-scrollbar'>
+  <ScrollArea class='mt-3 min-h-0 flex-1' viewportClass='pr-1' scrollbars='vertical'>
     <div class='space-y-2'>
       {#each $tasksStore.tasks as task (task.id)}
         <TaskRailItem
@@ -106,7 +107,7 @@
         />
       {/each}
     </div>
-  </div>
+  </ScrollArea>
 </aside>
 
 {#if renamingTask}

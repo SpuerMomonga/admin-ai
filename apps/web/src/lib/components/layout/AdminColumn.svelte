@@ -1,5 +1,6 @@
 <script lang='ts'>
   import type { AdminMenuNode } from '$lib/admin/routes'
+  import type { Snippet } from 'svelte'
   import { goto } from '$app/navigation'
   import { adminMenuTree, formatAdminRouteFallbackTitle, getAdminRouteTitleKey } from '$lib/admin/routes'
   import AdminBreadcrumb from '$lib/components/layout/admin/AdminBreadcrumb.svelte'
@@ -8,6 +9,7 @@
   import AdminTabBar from '$lib/components/layout/admin/AdminTabBar.svelte'
   import AdminTopNav from '$lib/components/layout/admin/AdminTopNav.svelte'
   import { Button } from '$lib/components/ui/button'
+  import { ScrollArea } from '$lib/components/ui/scroll-area'
   import { Separator } from '$lib/components/ui/separator'
   import TooltipButton from '$lib/components/ui/tooltip-button.svelte'
   import {
@@ -36,7 +38,15 @@
     SquareSplitHorizontal,
   } from '@lucide/svelte'
 
-  const { taskId, adminPath } = $props<{ taskId: string | null, adminPath: string }>()
+  const {
+    taskId,
+    adminPath,
+    routeChildren,
+  } = $props<{
+    taskId: string | null
+    adminPath: string
+    routeChildren?: Snippet
+  }>()
 
   const currentAdminPath = $derived($adminTabsStore.activeAdminPath)
   const orderedAdminTabs = $derived(orderAdminPaths($adminTabsStore.visitedAdminPaths, $adminTabsStore.pinnedAdminPaths))
@@ -105,6 +115,18 @@
   }
 </script>
 
+{#snippet renderPrimaryRouteContent(path: string)}
+  {#if routeChildren && path === adminPath}
+    {#key `${path}:${refreshVersionByPath[path] ?? 0}`}
+      <div class='relative min-h-full'>
+        {@render routeChildren()}
+      </div>
+    {/key}
+  {:else}
+    <AdminPageRenderer path={path} refreshKey={refreshVersionByPath[path] ?? 0} />
+  {/if}
+{/snippet}
+
 {#snippet headerControls()}
   <div class='flex items-center gap-1.5'>
     {#if splitAdminPath}
@@ -114,7 +136,7 @@
         aria-label={t('admin_tab_unsplit')}
         onclick={closeAdminSplit}
       >
-        <SquareSplitHorizontal class='size-[16px]' />
+        <SquareSplitHorizontal class='size-4' />
       </TooltipButton>
     {/if}
 
@@ -125,7 +147,7 @@
         aria-label={t('admin_tab_restore')}
         onclick={restoreAdminPath}
       >
-        <Minimize2 class='size-[16px]' />
+        <Minimize2 class='size-4' />
       </TooltipButton>
     {/if}
 
@@ -135,7 +157,7 @@
       aria-label={t('collapse_right')}
       onclick={toggleRightCollapsed}
     >
-      <PanelRightClose class='size-[16px]' />
+      <PanelRightClose class='size-4' />
     </TooltipButton>
   </div>
 {/snippet}
@@ -148,9 +170,9 @@
     onclick={() => refreshPage(path)}
   >
     {#if refreshingByPath[path]}
-      <LoaderCircle class='size-[16px] animate-spin' />
+      <LoaderCircle class='size-4 animate-spin' />
     {:else}
-      <RotateCcw class='size-[16px]' />
+      <RotateCcw class='size-4' />
     {/if}
   </TooltipButton>
 {/snippet}
@@ -179,9 +201,9 @@
             </Button>
           </header>
 
-          <div class='min-h-0 flex-1 overflow-y-auto no-scrollbar'>
-            <AdminPageRenderer path={currentAdminPath} refreshKey={refreshVersionByPath[currentAdminPath] ?? 0} />
-          </div>
+          <ScrollArea class='min-h-0 flex-1' scrollbars='vertical'>
+            {@render renderPrimaryRouteContent(currentAdminPath)}
+          </ScrollArea>
         </section>
 
         <Separator orientation='vertical' class='bg-shell-border/80' />
@@ -219,20 +241,20 @@
             </div>
           </header>
 
-          <div class='min-h-0 flex-1 overflow-y-auto no-scrollbar'>
+          <ScrollArea class='min-h-0 flex-1' scrollbars='vertical'>
             <AdminPageRenderer path={splitAdminPath} refreshKey={refreshVersionByPath[splitAdminPath] ?? 0} />
-          </div>
+          </ScrollArea>
         </section>
       </div>
     {:else}
-      <div class='h-full min-h-0 overflow-y-auto no-scrollbar'>
-        <AdminPageRenderer path={currentAdminPath} refreshKey={refreshVersionByPath[currentAdminPath] ?? 0} />
-      </div>
+      <ScrollArea class='h-full min-h-0' scrollbars='vertical'>
+        {@render renderPrimaryRouteContent(currentAdminPath)}
+      </ScrollArea>
     {/if}
   </div>
 {/snippet}
 
-<section class={`workspace-pane workspace-right-pane h-full min-h-0 ${$navigationStore.rightCollapsed ? 'flex w-full flex-col items-center gap-2 px-1.5 py-2 xl:w-[56px]' : 'flex min-w-0 flex-col overflow-hidden px-2 py-2'}`}>
+<section class={`workspace-pane workspace-right-pane h-full min-h-0 ${$navigationStore.rightCollapsed ? 'flex w-full flex-col items-center gap-2 px-1.5 py-2 xl:w-14' : 'flex min-w-0 flex-col overflow-hidden px-2 py-2'}`}>
   {#if !$navigationStore.rightCollapsed}
     {#if adminNavMode === 'sidebar'}
       <div class='flex min-h-0 flex-1 flex-col overflow-hidden'>
@@ -303,7 +325,7 @@
       aria-label={t('expand_right')}
       onclick={toggleRightCollapsed}
     >
-      <PanelRightOpen class='size-[16px]' />
+      <PanelRightOpen class='size-4' />
     </TooltipButton>
 
     <div class='flex flex-col gap-2'>
@@ -335,7 +357,7 @@
 </section>
 
 {#if maximizedAdminPath}
-  <div class='fixed inset-0 z-[80] bg-shell-canvas/96 backdrop-blur-xl'>
+  <div class='fixed inset-0 z-80 bg-shell-canvas/96 backdrop-blur-xl'>
     <section class='flex h-full flex-col px-0 py-0'>
       <header class='flex items-center justify-between border-b border-shell-border bg-shell-panel px-3 py-2'>
         <div class='flex min-w-0 items-center gap-2'>
@@ -353,9 +375,9 @@
         </Button>
       </header>
 
-      <div class='min-h-0 flex-1 overflow-y-auto'>
+      <ScrollArea class='min-h-0 flex-1' scrollbars='vertical'>
         <AdminPageRenderer path={maximizedAdminPath} refreshKey={refreshVersionByPath[maximizedAdminPath] ?? 0} />
-      </div>
+      </ScrollArea>
     </section>
   </div>
 {/if}

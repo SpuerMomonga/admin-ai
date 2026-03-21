@@ -76,7 +76,7 @@
         <Ellipsis class='size-4' />
       </DropdownMenu.Trigger>
 
-      <DropdownMenu.Content align='end' sideOffset={8} class='min-w-[132px]'>
+      <DropdownMenu.Content align='end' sideOffset={8} class='min-w-33'>
         <DropdownMenu.Item
           class='px-2.5 py-2 text-sm'
           onclick={(event) => {

@@ -31,7 +31,7 @@
           aria-label={t('expand_left')}
           onclick={() => setLeftCollapsed(false)}
         >
-          <PanelLeftOpen class='size-[18px]' />
+          <PanelLeftOpen class='size-4.5' />
         </TooltipButton>
 
         <p class='truncate text-sm font-semibold text-foreground'>
@@ -52,7 +52,7 @@
       aria-label={t('new_task')}
       onclick={createNewTask}
     >
-      <MessageCirclePlus class='size-[18px]' />
+      <MessageCirclePlus class='size-4.5' />
     </TooltipButton>
 
     <WorkspaceUserMenu {taskId} {adminPath} />
@@ -64,7 +64,7 @@
         aria-label={t('expand_right')}
         onclick={() => setRightCollapsed(false)}
       >
-        <PanelRightOpen class='size-[18px]' />
+        <PanelRightOpen class='size-4.5' />
       </TooltipButton>
     {/if}
   </div>

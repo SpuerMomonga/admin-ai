@@ -1,6 +1,7 @@
 <script lang='ts'>
   import { goto } from '$app/navigation'
   import * as ContextMenu from '$lib/components/ui/context-menu'
+  import { ScrollArea } from '$lib/components/ui/scroll-area'
   import {
     buildWorkspacePath,
     closeAdminPath,
@@ -145,51 +146,53 @@
   }
 </script>
 
-<div class='flex items-center gap-1.5 overflow-x-auto no-scrollbar'>
-  {#each paths as path}
-    {@const active = path === activePath}
-    {@const pinned = isPinned(path)}
-    <ContextMenu.Root>
-      <ContextMenu.Trigger
-        draggable='true'
-        class={`group inline-flex shrink-0 items-center gap-1 rounded-[7px] border px-2 py-1 text-[11px] font-medium transition ${active ? 'border-brand/25 bg-brand/10 text-brand' : 'border-shell-border/80 bg-shell-muted-panel/88 text-muted-foreground hover:border-brand/18 hover:bg-brand/[0.05] hover:text-foreground'} ${splitPath === path ? 'ring-1 ring-brand/14' : ''} ${draggingTabPath === path ? 'opacity-60' : ''}`}
-        ondragstart={() => beginDrag(path)}
-        ondragend={endDrag}
-        ondragover={event => event.preventDefault()}
-        ondrop={() => dropOn(path)}
-      >
-        <button type='button' class='inline-flex min-w-0 items-center gap-1.5' onclick={() => openTabPath(path)}>
-          {#if pinned}
-            <Pin class='size-3 text-brand/80' />
-          {/if}
-          <span class='truncate'>{getTitle(path)}</span>
-        </button>
-
-        {#if !pinned}
-          <button
-            type='button'
-            class='inline-flex size-4 items-center justify-center rounded-[4px] text-muted-foreground opacity-0 transition hover:bg-shell-surface hover:text-foreground group-hover:opacity-100'
-            aria-label={t('admin_tab_close')}
-            onclick={(event) => {
-              event.stopPropagation()
-              void closeTabPath(path)
-            }}
-          >
-            <X class='size-3' />
+<ScrollArea class='w-full whitespace-nowrap' viewportClass='pb-1' scrollbars='horizontal'>
+  <div class='flex items-center gap-1.5'>
+    {#each paths as path}
+      {@const active = path === activePath}
+      {@const pinned = isPinned(path)}
+      <ContextMenu.Root>
+        <ContextMenu.Trigger
+          draggable='true'
+          class={`group inline-flex shrink-0 items-center gap-1 rounded-[7px] border px-2 py-1 text-[11px] font-medium transition ${active ? 'border-brand/25 bg-brand/10 text-brand' : 'border-shell-border/80 bg-shell-muted-panel/88 text-muted-foreground hover:border-brand/18 hover:bg-brand/5 hover:text-foreground'} ${splitPath === path ? 'ring-1 ring-brand/14' : ''} ${draggingTabPath === path ? 'opacity-60' : ''}`}
+          ondragstart={() => beginDrag(path)}
+          ondragend={endDrag}
+          ondragover={event => event.preventDefault()}
+          ondrop={() => dropOn(path)}
+        >
+          <button type='button' class='inline-flex min-w-0 items-center gap-1.5' onclick={() => openTabPath(path)}>
+            {#if pinned}
+              <Pin class='size-3 text-brand/80' />
+            {/if}
+            <span class='truncate'>{getTitle(path)}</span>
           </button>
-        {/if}
-      </ContextMenu.Trigger>
 
-      <ContextMenu.Content class='w-[220px]'>
-        <ContextMenu.Item disabled={pinned} onclick={() => void handleMenuAction('close', path)}>{t('admin_tab_close')}</ContextMenu.Item>
-        <ContextMenu.Item disabled={closableCount(path, 'left') === 0} onclick={() => void handleMenuAction('close-left', path)}>{t('admin_tab_close_left')}</ContextMenu.Item>
-        <ContextMenu.Item disabled={closableCount(path, 'right') === 0} onclick={() => void handleMenuAction('close-right', path)}>{t('admin_tab_close_right')}</ContextMenu.Item>
-        <ContextMenu.Item onclick={() => void handleMenuAction('close-others', path)}>{t('admin_tab_close_others')}</ContextMenu.Item>
-        <ContextMenu.Separator />
-        <ContextMenu.Item onclick={() => void handleMenuAction(pinned ? 'unpin' : 'pin', path)}>{pinned ? t('admin_tab_unpin') : t('admin_tab_pin')}</ContextMenu.Item>
-        <ContextMenu.Item onclick={() => void handleMenuAction(maximizedPath === path ? 'restore' : 'maximize', path)}>{maximizedPath === path ? t('admin_tab_restore') : t('admin_tab_maximize')}</ContextMenu.Item>
-        <ContextMenu.Item onclick={() => void handleMenuAction(splitPath === path ? 'unsplit' : 'split', path)}>{splitPath === path ? t('admin_tab_unsplit') : t('admin_tab_split')}</ContextMenu.Item>
-      </ContextMenu.Content>
-    </ContextMenu.Root>
-  {/each}
-</div>
+          {#if !pinned}
+            <button
+              type='button'
+              class='inline-flex size-4 items-center justify-center rounded-lg text-muted-foreground opacity-0 transition hover:bg-shell-surface hover:text-foreground group-hover:opacity-100'
+              aria-label={t('admin_tab_close')}
+              onclick={(event) => {
+                event.stopPropagation()
+                void closeTabPath(path)
+              }}
+            >
+              <X class='size-3' />
+            </button>
+          {/if}
+        </ContextMenu.Trigger>
+
+        <ContextMenu.Content class='w-55'>
+          <ContextMenu.Item disabled={pinned} onclick={() => void handleMenuAction('close', path)}>{t('admin_tab_close')}</ContextMenu.Item>
+          <ContextMenu.Item disabled={closableCount(path, 'left') === 0} onclick={() => void handleMenuAction('close-left', path)}>{t('admin_tab_close_left')}</ContextMenu.Item>
+          <ContextMenu.Item disabled={closableCount(path, 'right') === 0} onclick={() => void handleMenuAction('close-right', path)}>{t('admin_tab_close_right')}</ContextMenu.Item>
+          <ContextMenu.Item onclick={() => void handleMenuAction('close-others', path)}>{t('admin_tab_close_others')}</ContextMenu.Item>
+          <ContextMenu.Separator />
+          <ContextMenu.Item onclick={() => void handleMenuAction(pinned ? 'unpin' : 'pin', path)}>{pinned ? t('admin_tab_unpin') : t('admin_tab_pin')}</ContextMenu.Item>
+          <ContextMenu.Item onclick={() => void handleMenuAction(maximizedPath === path ? 'restore' : 'maximize', path)}>{maximizedPath === path ? t('admin_tab_restore') : t('admin_tab_maximize')}</ContextMenu.Item>
+          <ContextMenu.Item onclick={() => void handleMenuAction(splitPath === path ? 'unsplit' : 'split', path)}>{splitPath === path ? t('admin_tab_unsplit') : t('admin_tab_split')}</ContextMenu.Item>
+        </ContextMenu.Content>
+      </ContextMenu.Root>
+    {/each}
+  </div>
+</ScrollArea>

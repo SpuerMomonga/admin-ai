@@ -2,6 +2,7 @@
   import { browser } from '$app/environment'
   import { goto } from '$app/navigation'
   import { Button } from '$lib/components/ui/button'
+  import { ScrollArea } from '$lib/components/ui/scroll-area'
   import TooltipButton from '$lib/components/ui/tooltip-button.svelte'
   import { buildWorkspacePath } from '$lib/stores/admin-tabs'
   import { setMessageFeedback, setTaskDraft, submitTaskDraft } from '$lib/stores/conversation'
@@ -64,56 +65,58 @@
 
 <section class='flex min-h-0 flex-1 flex-col overflow-hidden'>
   {#if activeTask}
-    <div class='flex-1 space-y-3 overflow-y-auto px-3 py-3 no-scrollbar'>
-      {#each activeTask.messages as message (message.id)}
-        <article class={`max-w-[86%] text-sm leading-6 ${message.role === 'assistant' ? 'text-foreground' : 'ml-auto rounded-[10px] bg-brand px-3 py-2.5 text-brand-foreground'}`}>
-          <p>{message.content}</p>
-          {#if message.role === 'assistant'}
-            <div class='mt-1.5 flex items-center gap-1 text-[11px] text-muted-foreground'>
-              <div class='flex items-center gap-0.5'>
-                <TooltipButton
-                  content={t('copy_message')}
-                  class={`inline-flex size-6 items-center justify-center rounded-[6px] text-muted-foreground transition hover:bg-shell-muted-panel hover:text-foreground ${copiedMessageId === message.id ? 'text-brand' : ''}`}
-                  onclick={() => copyMessage(message.id, message.content)}
-                >
-                  {#if copiedMessageId === message.id}
-                    <Check class='size-3.5' />
-                  {:else}
-                    <Copy class='size-3.5' />
-                  {/if}
-                </TooltipButton>
+    <ScrollArea class='min-h-0 flex-1' viewportClass='px-3 py-3' scrollbars='vertical'>
+      <div class='space-y-3'>
+        {#each activeTask.messages as message (message.id)}
+          <article class={`max-w-[86%] text-sm leading-6 ${message.role === 'assistant' ? 'text-foreground' : 'ml-auto rounded-[10px] bg-brand px-3 py-2.5 text-brand-foreground'}`}>
+            <p>{message.content}</p>
+            {#if message.role === 'assistant'}
+              <div class='mt-1.5 flex items-center gap-1 text-[11px] text-muted-foreground'>
+                <div class='flex items-center gap-0.5'>
+                  <TooltipButton
+                    content={t('copy_message')}
+                    class={`inline-flex size-6 items-center justify-center rounded-[6px] text-muted-foreground transition hover:bg-shell-muted-panel hover:text-foreground ${copiedMessageId === message.id ? 'text-brand' : ''}`}
+                    onclick={() => copyMessage(message.id, message.content)}
+                  >
+                    {#if copiedMessageId === message.id}
+                      <Check class='size-3.5' />
+                    {:else}
+                      <Copy class='size-3.5' />
+                    {/if}
+                  </TooltipButton>
 
-                <TooltipButton
-                  content={t('upvote_message')}
-                  class={`inline-flex size-6 items-center justify-center rounded-[6px] text-muted-foreground transition hover:bg-shell-muted-panel hover:text-foreground ${message.feedback === 'up' ? 'text-brand' : ''}`}
-                  onclick={() => taskId && setMessageFeedback(taskId, message.id, 'up')}
-                >
-                  <ThumbsUp class='size-3.5' />
-                </TooltipButton>
+                  <TooltipButton
+                    content={t('upvote_message')}
+                    class={`inline-flex size-6 items-center justify-center rounded-[6px] text-muted-foreground transition hover:bg-shell-muted-panel hover:text-foreground ${message.feedback === 'up' ? 'text-brand' : ''}`}
+                    onclick={() => taskId && setMessageFeedback(taskId, message.id, 'up')}
+                  >
+                    <ThumbsUp class='size-3.5' />
+                  </TooltipButton>
 
-                <TooltipButton
-                  content={t('downvote_message')}
-                  class={`inline-flex size-6 items-center justify-center rounded-[6px] text-muted-foreground transition hover:bg-shell-muted-panel hover:text-foreground ${message.feedback === 'down' ? 'text-brand' : ''}`}
-                  onclick={() => taskId && setMessageFeedback(taskId, message.id, 'down')}
-                >
-                  <ThumbsDown class='size-3.5' />
-                </TooltipButton>
+                  <TooltipButton
+                    content={t('downvote_message')}
+                    class={`inline-flex size-6 items-center justify-center rounded-[6px] text-muted-foreground transition hover:bg-shell-muted-panel hover:text-foreground ${message.feedback === 'down' ? 'text-brand' : ''}`}
+                    onclick={() => taskId && setMessageFeedback(taskId, message.id, 'down')}
+                  >
+                    <ThumbsDown class='size-3.5' />
+                  </TooltipButton>
+                </div>
+
+                <span class='ml-1'>{formatTime(message.createdAt)}</span>
               </div>
-
-              <span class='ml-1'>{formatTime(message.createdAt)}</span>
-            </div>
-          {:else}
-            <p class='mt-1.5 text-[11px] text-brand-foreground/75'>
-              {formatTime(message.createdAt)}
-            </p>
-          {/if}
-        </article>
-      {/each}
-    </div>
+            {:else}
+              <p class='mt-1.5 text-[11px] text-brand-foreground/75'>
+                {formatTime(message.createdAt)}
+              </p>
+            {/if}
+          </article>
+        {/each}
+      </div>
+    </ScrollArea>
   {:else}
     <div class='flex flex-1 items-center justify-center px-6 py-8'>
       <div class='mx-auto flex w-full min-w-0 max-w-2xl flex-col items-center text-center'>
-        <h2 class='max-w-full px-4 text-3xl font-semibold tracking-tight text-foreground break-words sm:text-4xl'>
+        <h2 class='max-w-full px-4 text-3xl font-semibold tracking-tight text-foreground wrap-break-word sm:text-4xl'>
           {t('workspace_empty_title')}
         </h2>
 
@@ -122,7 +125,7 @@
             <Button
               variant='outline'
               size='sm'
-              class='max-w-full whitespace-normal break-words text-center sm:whitespace-nowrap'
+              class='max-w-full whitespace-normal wrap-break-word text-center sm:whitespace-nowrap'
               onclick={() => void submitSuggestion(suggestion)}
             >
               {suggestion}

@@ -1,6 +1,7 @@
 <script lang='ts'>
   import type { AdminMenuNode } from '$lib/admin/routes'
   import { Button } from '$lib/components/ui/button'
+  import { ScrollArea } from '$lib/components/ui/scroll-area'
   import { translate as t } from '$lib/stores/i18n'
   import {
     BookOpenText,
@@ -123,10 +124,10 @@
   {/each}
 {/snippet}
 
-<aside class='flex h-full min-h-0 w-[176px] shrink-0 flex-col overflow-hidden bg-transparent'>
-  <div class='min-h-0 flex-1 overflow-y-auto px-0 py-1 no-scrollbar'>
+<aside class='flex h-full min-h-0 w-44 shrink-0 flex-col overflow-hidden bg-transparent'>
+  <ScrollArea class='min-h-0 flex-1' viewportClass='px-0 py-1' scrollbars='vertical'>
     <div class='grid gap-0.5'>
       {@render renderNodes(nodes, 0)}
     </div>
-  </div>
+  </ScrollArea>
 </aside>

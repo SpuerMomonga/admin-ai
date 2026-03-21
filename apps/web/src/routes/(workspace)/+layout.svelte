@@ -1,4 +1,5 @@
 <script lang='ts'>
+  import type { Snippet } from 'svelte'
   import { browser } from '$app/environment'
   import { goto } from '$app/navigation'
   import { page } from '$app/state'
@@ -10,6 +11,8 @@
   import { translate as t } from '$lib/stores/i18n'
   import { getNavigationSnapshot, navigationStore, setColumnWidth, setLeftCollapsed, setRightCollapsed } from '$lib/stores/navigation'
   import { sessionStore } from '$lib/stores/session'
+
+  const { children } = $props<{ children: Snippet }>()
 
   let containerElement = $state<HTMLElement | null>(null)
   let containerWidth = $state(0)
@@ -132,6 +135,10 @@
   }
 </script>
 
+{#snippet routeChildren()}
+  {@render children()}
+{/snippet}
+
 <section
   bind:this={containerElement}
   bind:clientWidth={containerWidth}
@@ -167,7 +174,7 @@
         class='h-full min-h-0 shrink-0 overflow-hidden'
         style={`width:${rightPaneWidth}px;`}
       >
-        <AdminColumn taskId={taskId} adminPath={adminPath} />
+        <AdminColumn taskId={taskId} adminPath={adminPath} routeChildren={routeChildren} />
       </div>
     {/if}
   </div>

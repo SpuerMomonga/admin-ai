@@ -57,7 +57,7 @@
   <section class='px-3 pb-3 pt-2'>
     <div class='rounded-[10px] border border-shell-border bg-shell-surface px-3 py-3 shadow-[0_6px_18px_rgba(15,23,42,0.04)]'>
       <Textarea
-        class='min-h-[72px] resize-none border-0 bg-transparent px-0 py-0 shadow-none focus-visible:ring-0'
+        class='min-h-18 resize-none border-0 bg-transparent px-0 py-0 shadow-none focus-visible:ring-0'
         value={activeTask.draft}
         placeholder={t('composer_placeholder')}
         onkeydown={handleKeydown}
@@ -111,7 +111,7 @@
   <section class='px-3 pb-3 pt-2'>
     <div class='rounded-[10px] border border-shell-border bg-shell-surface px-3 py-3 shadow-[0_6px_18px_rgba(15,23,42,0.04)]'>
       <Textarea
-        class='min-h-[72px] resize-none border-0 bg-transparent px-0 py-0 shadow-none focus-visible:ring-0'
+        class='min-h-18 resize-none border-0 bg-transparent px-0 py-0 shadow-none focus-visible:ring-0'
         value={starterPrompt}
         placeholder={t('composer_placeholder')}
         onkeydown={handleKeydown}
