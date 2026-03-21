@@ -262,7 +262,7 @@
   {#if !$navigationStore.rightCollapsed}
     {#if adminNavMode === 'sidebar'}
       <div class='flex min-h-0 flex-1 flex-col overflow-hidden'>
-        <header class='pb-2'>
+        <header class='border-b border-shell-border pb-2'>
           <div class='flex items-center justify-between gap-3'>
             <div class='flex min-w-0 items-center gap-2'>
               {@render refreshButton(currentAdminPath)}
@@ -272,14 +272,12 @@
           </div>
         </header>
 
-        <Separator class='mb-2 bg-shell-border/80' />
-
         <div class='flex min-h-0 flex-1 gap-2'>
           <AdminSidebarNav nodes={adminMenuTree} activePath={currentAdminPath} onnavigate={openAdminPath} />
           <Separator orientation='vertical' class='bg-shell-border/80' />
 
           <div class='flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden'>
-            <div class='pb-2'>
+            <div class='py-0.5'>
               <AdminTabBar
                 {taskId}
                 paths={orderedAdminTabs}
@@ -297,7 +295,7 @@
       </div>
     {:else}
       <div class='flex min-h-0 flex-1 flex-col overflow-hidden'>
-        <header class='pb-2'>
+        <header>
           <div class='flex items-center justify-between gap-3'>
             <div class='flex min-w-0 items-center gap-2'>
               {@render refreshButton(currentAdminPath)}
@@ -305,8 +303,8 @@
             </div>
             {@render headerControls()}
           </div>
-          <Separator class='mt-2' />
-          <div class='pt-2'>
+          <Separator class='mt-1.5 bg-shell-border/80' />
+          <div class='py-0.5'>
             <AdminTabBar
               {taskId}
               paths={orderedAdminTabs}
@@ -317,6 +315,7 @@
               getTitle={getAdminTitle}
             />
           </div>
+          <Separator class='bg-shell-border/80' />
         </header>
 
         {@render pageViewport()}
