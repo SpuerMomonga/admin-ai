@@ -1,4 +1,4 @@
-import type { AdminPanel } from './types'
+import type { AdminPanel } from '$lib/types/app'
 
 export const adminPanels = ['general', 'preferences', 'account', 'models', 'knowledge', 'rules'] as const satisfies ReadonlyArray<AdminPanel>
 export const defaultAdminPath = '/general'

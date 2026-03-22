@@ -1,17 +1,12 @@
-import type { TaskRecord, TaskStatus } from './shared/types'
-import { getCurrentLocale } from '$lib/stores/i18n'
+import type { TaskRecord, TasksState, TaskStatus } from '$lib/types/app'
+import { getCurrentLocale } from '$lib/i18n'
+import { persistState, readStoredState, storageKeys } from '$lib/utils/storage'
+import { createDefaultTasks, createTaskId, createTaskRecord, isTaskStatus, normalizeTask } from '$lib/utils/task-fixtures'
 import { writable } from 'svelte/store'
-import { persistState, readStoredState, storageKeys } from './shared/storage'
-import { createDefaultTasks, createTaskId, createTaskRecord, isTaskStatus, normalizeTask } from './shared/task-fixtures'
 
-export type { TaskRecord, TaskStatus } from './shared/types'
+export type { TaskRecord, TasksState, TaskStatus } from '$lib/types/app'
 
 const titleWhitespacePattern = /\s+/g
-
-export interface TasksState {
-  activeTaskId: string
-  tasks: TaskRecord[]
-}
 
 interface CreateTaskOptions {
   title?: string

@@ -7,10 +7,19 @@
   import ChatColumn from '$lib/components/layout/ChatColumn.svelte'
   import ColumnResizeHandle from '$lib/components/layout/ColumnResizeHandle.svelte'
   import TaskRail from '$lib/components/layout/TaskRail.svelte'
-  import { activateRoute, adminTabsStore, openAdminPath, resolveAdminPathFromPathname } from '$lib/stores/admin-tabs'
-  import { translate as t } from '$lib/stores/i18n'
-  import { getNavigationSnapshot, navigationStore, setColumnWidth, setLeftCollapsed, setRightCollapsed } from '$lib/stores/navigation'
-  import { sessionStore } from '$lib/stores/session'
+  import { m } from '$lib/paraglide/messages.js'
+  import {
+    appStateStore,
+    endColumnResize,
+    getAppStateSnapshot,
+    setColumnWidth,
+    setLeftCollapsed,
+    setRightCollapsed,
+    startColumnResize,
+    updateResizePointer,
+  } from '$lib/stores/app-state'
+  import { authStore } from '$lib/stores/auth'
+  import { activateRoute, openTab, resolveAdminPathFromPathname, tabsStore } from '$lib/stores/tabs'
 
   const { children } = $props<{ children: Snippet }>()
 
@@ -25,11 +34,11 @@
 
   const taskId = $derived(page.url.searchParams.get('taskId'))
   const adminPath = $derived(
-    resolveAdminPathFromPathname(page.url.pathname) ?? $adminTabsStore.activeAdminPath,
+    resolveAdminPathFromPathname(page.url.pathname) ?? $tabsStore.activeAdminPath,
   )
 
   $effect(() => {
-    if (browser && !$sessionStore.isLoggedIn) {
+    if (browser && !$authStore.isLoggedIn) {
       void goto('/login', { replaceState: true })
     }
   })
@@ -44,7 +53,7 @@
     }
 
     if (nextAdminPath) {
-      openAdminPath(nextAdminPath)
+      openTab(nextAdminPath)
     }
   })
 
@@ -62,24 +71,24 @@
   }
 
   const workspaceMeasured = $derived(containerWidth > 0)
-  const visibleHandleCount = $derived(Number(!$navigationStore.leftCollapsed) + Number(!$navigationStore.rightCollapsed))
+  const visibleHandleCount = $derived(Number(!$appStateStore.leftCollapsed) + Number(!$appStateStore.rightCollapsed))
   const usableWidth = $derived(Math.max(containerWidth - desktopHandleWidth * visibleHandleCount, 0))
   const leftPaneWidth = $derived.by(() => {
-    if ($navigationStore.leftCollapsed) {
+    if ($appStateStore.leftCollapsed) {
       return 0
     }
 
-    const maxLeft = Math.min(420, usableWidth - ($navigationStore.rightCollapsed ? 0 : $navigationStore.columnWidths.right) - desktopMinMiddleWidth)
-    return clamp($navigationStore.columnWidths.left, minDesktopLeftWidth, Math.max(minDesktopLeftWidth, maxLeft))
+    const maxLeft = Math.min(420, usableWidth - ($appStateStore.rightCollapsed ? 0 : $appStateStore.columnWidths.right) - desktopMinMiddleWidth)
+    return clamp($appStateStore.columnWidths.left, minDesktopLeftWidth, Math.max(minDesktopLeftWidth, maxLeft))
   })
   const rightPaneWidth = $derived.by(() => {
-    if ($navigationStore.rightCollapsed) {
+    if ($appStateStore.rightCollapsed) {
       return 0
     }
 
-    const leftWidth = $navigationStore.leftCollapsed ? 0 : leftPaneWidth
+    const leftWidth = $appStateStore.leftCollapsed ? 0 : leftPaneWidth
     const maxRight = Math.min(usableWidth * 0.8, usableWidth - leftWidth - desktopMinMiddleWidth)
-    return clampCollapsiblePaneWidth($navigationStore.columnWidths.right, minDesktopRightWidth, maxRight)
+    return clampCollapsiblePaneWidth($appStateStore.columnWidths.right, minDesktopRightWidth, maxRight)
   })
 
   function beginResize(side: 'left' | 'right', event: PointerEvent) {
@@ -90,13 +99,15 @@
     event.preventDefault()
 
     const startX = event.clientX
-    const snapshot = getNavigationSnapshot()
+    const snapshot = getAppStateSnapshot()
     const startLeft = snapshot.leftCollapsed ? 0 : leftPaneWidth
     const startRight = snapshot.rightCollapsed ? 0 : rightPaneWidth
     const activeHandleCount = Number(!snapshot.leftCollapsed) + Number(!snapshot.rightCollapsed)
     const totalWidth = containerElement.getBoundingClientRect().width - desktopHandleWidth * activeHandleCount
+    startColumnResize(side, startX)
 
     const onMove = (moveEvent: PointerEvent) => {
+      updateResizePointer(moveEvent.clientX)
       const delta = moveEvent.clientX - startX
 
       if (side === 'left') {
@@ -114,7 +125,7 @@
         return
       }
 
-      const currentLeftWidth = getNavigationSnapshot().leftCollapsed ? 0 : leftPaneWidth
+      const currentLeftWidth = getAppStateSnapshot().leftCollapsed ? 0 : leftPaneWidth
       const maxRight = Math.min(totalWidth * 0.8, totalWidth - currentLeftWidth - desktopMinMiddleWidth)
       const attemptedRightWidth = startRight - delta
 
@@ -135,12 +146,13 @@
 
       const isExpandingRightPane = delta < 0
 
-      if (isExpandingRightPane && !getNavigationSnapshot().leftCollapsed && nextRightWidth / totalWidth > 0.5) {
+      if (isExpandingRightPane && !getAppStateSnapshot().leftCollapsed && nextRightWidth / totalWidth > 0.5) {
         setLeftCollapsed(true)
       }
     }
 
     const onUp = () => {
+      endColumnResize()
       window.removeEventListener('pointermove', onMove)
       window.removeEventListener('pointerup', onUp)
     }
@@ -161,7 +173,7 @@
   aria-busy={!workspaceMeasured}
 >
   <div class={`flex h-full w-full overflow-hidden ${workspaceMeasured ? '' : 'invisible'}`}>
-    {#if !$navigationStore.leftCollapsed}
+    {#if !$appStateStore.leftCollapsed}
       <div
         class='h-full min-h-0 shrink-0 overflow-hidden'
         style={`width:${leftPaneWidth}px;`}
@@ -179,7 +191,7 @@
       <ChatColumn taskId={taskId} adminPath={adminPath} />
     </div>
 
-    {#if !$navigationStore.rightCollapsed}
+    {#if !$appStateStore.rightCollapsed}
       <ColumnResizeHandle
         title='Resize admin panel'
         onpointerdown={event => beginResize('right', event)}
@@ -201,7 +213,7 @@
           <span class='absolute inline-flex h-full w-full animate-ping rounded-full bg-brand/35'></span>
           <span class='relative inline-flex size-2.5 rounded-full bg-brand'></span>
         </span>
-        <span class='text-sm text-muted-foreground'>{t('workspace_loading')}</span>
+        <span class='text-sm text-muted-foreground'>{m.workspace_loading()}</span>
       </div>
     </div>
   {/if}

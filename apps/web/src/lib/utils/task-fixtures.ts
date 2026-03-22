@@ -1,8 +1,7 @@
-import type { AppLocale } from '$lib/stores/i18n'
-import type { ChatMessage, ChatMode, SessionState, TaskRecord, TaskStatus } from './types'
+import type { AppLocale, ChatMessage, ChatMode, TaskRecord, TaskStatus } from '$lib/types/app'
 import { browser } from '$app/environment'
+import { getCurrentLocale } from '$lib/i18n'
 import { m } from '$lib/paraglide/messages.js'
-import { getCurrentLocale } from '$lib/stores/i18n'
 
 export const chatModes = ['conversation', 'operation'] as const satisfies ReadonlyArray<ChatMode>
 export const knowledgeBases = [
@@ -136,7 +135,7 @@ export function normalizeTask(task: Partial<TaskRecord>, index: number): TaskRec
   }
 }
 
-export function buildAssistantReply(session: SessionState['isLoggedIn'] extends boolean ? { locale: AppLocale } : never, task: TaskRecord, prompt: string) {
+export function buildAssistantReply(context: { locale: AppLocale }, task: TaskRecord, prompt: string) {
   const selectedBase = knowledgeBases.find(base => base.id === task.knowledgeBaseId)
   const knowledgeBase = selectedBase?.badge ?? 'OPS'
 
@@ -145,11 +144,11 @@ export function buildAssistantReply(session: SessionState['isLoggedIn'] extends 
       title: task.title,
       knowledgeBase,
       prompt,
-    }, { locale: session.locale }) as string
+    }, { locale: context.locale }) as string
   }
 
   return m.assistant_reply_conversation({
     title: task.title,
     knowledgeBase,
-  }, { locale: session.locale }) as string
+  }, { locale: context.locale }) as string
 }

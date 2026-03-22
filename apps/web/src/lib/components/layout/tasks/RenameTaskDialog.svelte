@@ -3,7 +3,7 @@
   import * as Dialog from '$lib/components/ui/dialog'
   import { Input } from '$lib/components/ui/input'
   import { Label } from '$lib/components/ui/label'
-  import { translate as t } from '$lib/stores/i18n'
+  import { m } from '$lib/paraglide/messages.js'
   import { tick } from 'svelte'
 
   let {
@@ -55,15 +55,15 @@
     <form class='grid gap-4' onsubmit={submit}>
       <Dialog.Header>
         <Dialog.Title class='text-base font-semibold text-foreground'>
-          {t('rename_task_prompt')}
+          {m.rename_task_prompt()}
         </Dialog.Title>
         <Dialog.Description>
-          {t('rename_task_description')}
+          {m.rename_task_description()}
         </Dialog.Description>
       </Dialog.Header>
 
       <div class='grid gap-2'>
-        <Label for='rename-task-title'>{t('task_title_label')}</Label>
+        <Label for='rename-task-title'>{m.task_title_label()}</Label>
         <Input
           id='rename-task-title'
           bind:ref={inputElement}
@@ -75,10 +75,10 @@
 
       <Dialog.Footer class='mt-1 sm:justify-end'>
         <Button type='button' variant='outline' onclick={close}>
-          {t('cancel')}
+          {m.cancel()}
         </Button>
         <Button type='submit' disabled={!canSubmit}>
-          {t('rename_task')}
+          {m.rename_task()}
         </Button>
       </Dialog.Footer>
     </form>

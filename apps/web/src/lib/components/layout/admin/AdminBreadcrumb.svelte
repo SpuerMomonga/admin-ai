@@ -1,7 +1,7 @@
 <script lang='ts'>
   import { adminMenuTree, findAdminMenuTrailByPath } from '$lib/admin/routes'
   import * as Breadcrumb from '$lib/components/ui/breadcrumb'
-  import { translate as t } from '$lib/stores/i18n'
+  import { m } from '$lib/paraglide/messages.js'
 
   const {
     path,
@@ -18,7 +18,7 @@
   <Breadcrumb.List>
     <Breadcrumb.Item>
       <Breadcrumb.Link onclick={() => onnavigate('/general')}>
-        {t('admin_label')}
+        {m.admin_label()}
       </Breadcrumb.Link>
     </Breadcrumb.Item>
 
@@ -27,10 +27,10 @@
         <Breadcrumb.Separator />
         {#if item.path && index < trail.length - 1}
           <Breadcrumb.Link onclick={() => onnavigate(item.path!)}>
-            {t(item.titleKey)}
+            {item.titleMessage()}
           </Breadcrumb.Link>
         {:else}
-          <Breadcrumb.Page>{t(item.titleKey)}</Breadcrumb.Page>
+          <Breadcrumb.Page>{item.titleMessage()}</Breadcrumb.Page>
         {/if}
       </Breadcrumb.Item>
     {/each}

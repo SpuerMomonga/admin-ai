@@ -1,19 +1,20 @@
 <script lang='ts'>
   import favicon from '$lib/assets/favicon.svg'
   import { TooltipProvider } from '$lib/components/ui/tooltip'
-  import { getSystemPreferencesSnapshot } from '$lib/stores/preferences'
-  import { hydrateSession } from '$lib/stores/session'
-  import { applyDocumentTheme, watchSystemTheme } from '$lib/stores/theme'
+  import { syncDocumentLocale } from '$lib/i18n'
+  import { hydrateAuth } from '$lib/stores/auth'
+  import { applyDocumentTheme, getPreferencesSnapshot, watchSystemTheme } from '$lib/stores/preferences'
   import { onMount } from 'svelte'
   import './layout.css'
 
   const { children } = $props()
 
   onMount(() => {
-    hydrateSession()
+    hydrateAuth()
+    syncDocumentLocale()
 
     return watchSystemTheme(() => {
-      if (getSystemPreferencesSnapshot().themePreference === 'system') {
+      if (getPreferencesSnapshot().themePreference === 'system') {
         applyDocumentTheme('system')
       }
     })

@@ -2,22 +2,22 @@
   import { goto } from '$app/navigation'
   import * as ContextMenu from '$lib/components/ui/context-menu'
   import { ScrollArea } from '$lib/components/ui/scroll-area'
+  import { m } from '$lib/paraglide/messages.js'
   import {
     buildWorkspacePath,
-    closeAdminPath,
-    closeAdminPathsByDirection,
-    closeAdminSplit,
-    closeOtherAdminPaths,
-    getAdminTabsSnapshot,
-    maximizeAdminPath,
-    openAdminPath,
-    pinAdminPath,
-    reorderAdminPaths,
-    restoreAdminPath,
-    splitAdminPath,
-    unpinAdminPath,
-  } from '$lib/stores/admin-tabs'
-  import { translate as t } from '$lib/stores/i18n'
+    closeOtherTabs,
+    closeSplitTab,
+    closeTab,
+    closeTabsByDirection,
+    getTabsSnapshot,
+    maximizeTab,
+    openTab,
+    pinTab,
+    reorderTabs,
+    restoreTab,
+    splitTab,
+    unpinTab,
+  } from '$lib/stores/tabs'
   import {
     ChevronsLeft,
     ChevronsLeftRight,
@@ -56,16 +56,16 @@
   }
 
   async function syncRoute(replaceState = false) {
-    await goto(buildWorkspacePath(taskId, getAdminTabsSnapshot().activeAdminPath), { replaceState })
+    await goto(buildWorkspacePath(taskId, getTabsSnapshot().activeAdminPath), { replaceState })
   }
 
   async function openTabPath(path: string) {
-    openAdminPath(path)
+    openTab(path)
     await syncRoute()
   }
 
   async function closeTabPath(path: string) {
-    closeAdminPath(path)
+    closeTab(path)
     await syncRoute(true)
   }
 
@@ -76,51 +76,51 @@
     }
 
     if (action === 'close-left') {
-      closeAdminPathsByDirection(path, 'left')
+      closeTabsByDirection(path, 'left')
       await syncRoute(true)
       return
     }
 
     if (action === 'close-right') {
-      closeAdminPathsByDirection(path, 'right')
+      closeTabsByDirection(path, 'right')
       await syncRoute(true)
       return
     }
 
     if (action === 'close-others') {
-      closeOtherAdminPaths(path)
+      closeOtherTabs(path)
       await syncRoute(true)
       return
     }
 
     if (action === 'pin') {
-      pinAdminPath(path)
+      pinTab(path)
       return
     }
 
     if (action === 'unpin') {
-      unpinAdminPath(path)
+      unpinTab(path)
       return
     }
 
     if (action === 'maximize') {
-      maximizeAdminPath(path)
+      maximizeTab(path)
       await syncRoute()
       return
     }
 
     if (action === 'restore') {
-      restoreAdminPath()
+      restoreTab()
       return
     }
 
     if (action === 'split') {
-      splitAdminPath(path)
+      splitTab(path)
       return
     }
 
     if (action === 'unsplit') {
-      closeAdminSplit()
+      closeSplitTab()
     }
   }
 
@@ -138,7 +138,7 @@
       return
     }
 
-    reorderAdminPaths(draggingTabPath, path)
+    reorderTabs(draggingTabPath, path)
     draggingTabPath = null
   }
 
@@ -186,7 +186,7 @@
             <button
               type='button'
               class='inline-flex size-4 items-center justify-center rounded-lg text-muted-foreground/75 transition hover:bg-shell-surface hover:text-foreground'
-              aria-label={t('admin_tab_close')}
+              aria-label={m.admin_tab_close()}
               onclick={(event) => {
                 event.stopPropagation()
                 void closeTabPath(path)
@@ -200,42 +200,42 @@
         <ContextMenu.Content class='min-w-max whitespace-nowrap p-1'>
           <ContextMenu.Item class={tabMenuItemClass} disabled={pinned} onclick={() => void handleMenuAction('close', path)}>
             <X class='size-4' />
-            <span>{t('admin_tab_close')}</span>
+            <span>{m.admin_tab_close()}</span>
           </ContextMenu.Item>
           <ContextMenu.Item class={tabMenuItemClass} disabled={closeLeftDisabled} onclick={() => void handleMenuAction('close-left', path)}>
             <ChevronsLeft class='size-4' />
-            <span>{t('admin_tab_close_left')}</span>
+            <span>{m.admin_tab_close_left()}</span>
           </ContextMenu.Item>
           <ContextMenu.Item class={tabMenuItemClass} disabled={closeRightDisabled} onclick={() => void handleMenuAction('close-right', path)}>
             <ChevronsRight class='size-4' />
-            <span>{t('admin_tab_close_right')}</span>
+            <span>{m.admin_tab_close_right()}</span>
           </ContextMenu.Item>
           <ContextMenu.Item class={tabMenuItemClass} onclick={() => void handleMenuAction('close-others', path)}>
             <ChevronsLeftRight class='size-4' />
-            <span>{t('admin_tab_close_others')}</span>
+            <span>{m.admin_tab_close_others()}</span>
           </ContextMenu.Item>
           <ContextMenu.Separator />
           <ContextMenu.Item class={tabMenuItemClass} onclick={() => void handleMenuAction(pinned ? 'unpin' : 'pin', path)}>
             {#if pinned}
               <PinOff class='size-4' />
-              <span>{t('admin_tab_unpin')}</span>
+              <span>{m.admin_tab_unpin()}</span>
             {:else}
               <Pin class='size-4' />
-              <span>{t('admin_tab_pin')}</span>
+              <span>{m.admin_tab_pin()}</span>
             {/if}
           </ContextMenu.Item>
           <ContextMenu.Item class={tabMenuItemClass} onclick={() => void handleMenuAction(maximized ? 'restore' : 'maximize', path)}>
             {#if maximized}
               <Minimize2 class='size-4' />
-              <span>{t('admin_tab_restore')}</span>
+              <span>{m.admin_tab_restore()}</span>
             {:else}
               <Maximize2 class='size-4' />
-              <span>{t('admin_tab_maximize')}</span>
+              <span>{m.admin_tab_maximize()}</span>
             {/if}
           </ContextMenu.Item>
           <ContextMenu.Item class={tabMenuItemClass} onclick={() => void handleMenuAction(split ? 'unsplit' : 'split', path)}>
             <SquareSplitHorizontal class='size-4' />
-            <span>{split ? t('admin_tab_unsplit') : t('admin_tab_split')}</span>
+            <span>{split ? m.admin_tab_unsplit() : m.admin_tab_split()}</span>
           </ContextMenu.Item>
         </ContextMenu.Content>
       </ContextMenu.Root>

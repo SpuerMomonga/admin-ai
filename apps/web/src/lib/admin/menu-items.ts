@@ -1,6 +1,5 @@
 import type { ItemType } from '$lib/components/ui/menu'
 import type { AdminMenuIconKey, AdminMenuNode } from './routes'
-import { translate as t } from '$lib/stores/i18n'
 import {
   BookOpenText,
   Columns2,
@@ -28,7 +27,7 @@ function resolveClickable(node: AdminMenuNode, options: BuildAdminMenuItemsOptio
 }
 
 function toMenuItem(node: AdminMenuNode, options: BuildAdminMenuItemsOptions): ItemType {
-  const label = t(node.titleKey)
+  const label = node.titleMessage()
   const icon = node.icon ? iconMap[node.icon] : undefined
   const clickable = resolveClickable(node, options)
 

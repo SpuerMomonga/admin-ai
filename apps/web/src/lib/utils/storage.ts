@@ -1,14 +1,12 @@
 import { browser } from '$app/environment'
 
 export const storageKeys = {
-  session: 'admin-ai.session.v1',
-  language: 'admin-ai.language.v1',
-  themePreference: 'admin-ai.theme.v1',
-  navigation: 'admin-ai.navigation.v1',
+  auth: 'admin-ai.session.v1',
+  preferences: 'admin-ai.theme.v1',
+  appState: 'admin-ai.navigation.v1',
   pendingTaskComposer: 'admin-ai.pending-task-composer.v1',
-  adminTabs: 'admin-ai.admin-tabs.v1',
+  tabs: 'admin-ai.admin-tabs.v1',
   tasks: 'admin-ai.tasks.v1',
-  settings: 'admin-ai.settings.v1',
 } as const
 
 export function readStoredState<T>(key: string, fallback: T, normalize?: (input: unknown) => T) {

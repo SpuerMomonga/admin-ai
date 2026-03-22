@@ -6,11 +6,11 @@
   import { Button } from '$lib/components/ui/button'
   import { ScrollArea } from '$lib/components/ui/scroll-area'
   import TooltipButton from '$lib/components/ui/tooltip-button.svelte'
-  import { buildWorkspacePath } from '$lib/stores/admin-tabs'
+  import { m } from '$lib/paraglide/messages.js'
+  import { appStateStore, toggleLeftCollapsed } from '$lib/stores/app-state'
   import { resetPendingTaskComposer } from '$lib/stores/conversation'
-  import { translate as t } from '$lib/stores/i18n'
-  import { navigationStore, toggleLeftCollapsed } from '$lib/stores/navigation'
-  import { systemPreferencesStore } from '$lib/stores/preferences'
+  import { preferencesStore } from '$lib/stores/preferences'
+  import { buildWorkspacePath } from '$lib/stores/tabs'
   import { deleteTask as deleteTaskRecord, renameTask, tasksStore } from '$lib/stores/tasks'
   import { CirclePlus, PanelLeftClose } from '@lucide/svelte'
 
@@ -58,36 +58,36 @@
   })
 </script>
 
-<aside class={`workspace-pane workspace-left-pane relative flex h-full min-h-0 flex-col overflow-hidden ${$navigationStore.leftCollapsed ? 'px-2 py-2.5' : 'px-2.5 py-2.5'}`}>
+<aside class={`workspace-pane workspace-left-pane relative flex h-full min-h-0 flex-col overflow-hidden ${$appStateStore.leftCollapsed ? 'px-2 py-2.5' : 'px-2.5 py-2.5'}`}>
   <div class='flex items-center justify-between gap-2'>
-    <AppLogo collapsed={$navigationStore.leftCollapsed} showSubtitle={false} />
+    <AppLogo collapsed={$appStateStore.leftCollapsed} showSubtitle={false} />
 
     <TooltipButton
-      content={t('collapse_left')}
+      content={m.collapse_left()}
       side='right'
       class='shell-panel-toggle-button'
-      aria-label={t('collapse_left')}
+      aria-label={m.collapse_left()}
       onclick={toggleLeftCollapsed}
     >
       <PanelLeftClose class='size-4.5' />
     </TooltipButton>
   </div>
 
-  <div class={`mt-3 ${$navigationStore.leftCollapsed ? 'space-y-2' : 'space-y-2.5'}`}>
+  <div class={`mt-3 ${$appStateStore.leftCollapsed ? 'space-y-2' : 'space-y-2.5'}`}>
     <Button
       variant='default'
-      class={`w-full ${$navigationStore.leftCollapsed ? 'justify-center px-0' : 'justify-start'}`}
+      class={`w-full ${$appStateStore.leftCollapsed ? 'justify-center px-0' : 'justify-start'}`}
       onclick={createNewTask}
     >
       <CirclePlus class='size-4 shrink-0' />
-      {#if !$navigationStore.leftCollapsed}
-        <span>{t('new_task')}</span>
+      {#if !$appStateStore.leftCollapsed}
+        <span>{m.new_task()}</span>
       {/if}
     </Button>
 
-    {#if !$navigationStore.leftCollapsed}
+    {#if !$appStateStore.leftCollapsed}
       <div class='flex items-center justify-between px-1'>
-        <p class='text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground'>{t('tasks_title')}</p>
+        <p class='text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground'>{m.tasks_title()}</p>
         <span class='rounded-full bg-shell-muted-panel px-2 py-1 text-[11px] font-medium text-muted-foreground'>
           {$tasksStore.tasks.length}
         </span>
@@ -101,8 +101,8 @@
         <TaskRailItem
           {task}
           active={task.id === taskId}
-          collapsed={$navigationStore.leftCollapsed}
-          locale={$systemPreferencesStore.locale}
+          collapsed={$appStateStore.leftCollapsed}
+          locale={$preferencesStore.locale}
           onselect={() => selectTask(task.id)}
           onrename={() => startRenameTask(task.id, task.title)}
           ondelete={() => handleDeleteTask(task.id)}

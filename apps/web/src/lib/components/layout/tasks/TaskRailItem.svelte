@@ -1,7 +1,7 @@
 <script lang='ts'>
   import type { TaskRecord, TaskStatus } from '$lib/stores/tasks'
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu'
-  import { translate as t, translateTaskStatus } from '$lib/stores/i18n'
+  import { m } from '$lib/paraglide/messages.js'
   import { Ellipsis, PencilLine, Trash2 } from '@lucide/svelte'
 
   const {
@@ -28,6 +28,18 @@
   }
 
   const dotTone = $derived(statusDotTone[task.status as TaskStatus])
+
+  function getTaskStatusLabel(status: TaskStatus) {
+    if (status === 'completed') {
+      return m.task_status_completed()
+    }
+
+    if (status === 'failed') {
+      return m.task_status_failed()
+    }
+
+    return m.task_status_in_progress()
+  }
 
   function formatTime(value: string) {
     return new Intl.DateTimeFormat(locale, {
@@ -58,7 +70,7 @@
       </div>
 
       <div class='mt-1.5 flex items-center gap-1 pl-4 pr-8 text-[11px] text-muted-foreground'>
-        <span class='shrink-0'>{translateTaskStatus(task.status)}</span>
+        <span class='shrink-0'>{getTaskStatusLabel(task.status)}</span>
         <span aria-hidden='true' class='shrink-0 text-[12px] leading-none text-muted-foreground/80'>•</span>
         <span class='shrink-0'>{formatTime(task.updatedAt)}</span>
       </div>
@@ -69,8 +81,8 @@
     <DropdownMenu.Root>
       <DropdownMenu.Trigger
         class='absolute right-2 top-1/2 inline-flex size-7 -translate-y-1/2 items-center justify-center rounded-[6px] text-muted-foreground transition hover:bg-shell-muted-panel hover:text-foreground'
-        title={t('task_actions')}
-        aria-label={t('task_actions')}
+        title={m.task_actions()}
+        aria-label={m.task_actions()}
         onclick={event => event.stopPropagation()}
       >
         <Ellipsis class='size-4' />
@@ -85,7 +97,7 @@
           }}
         >
           <PencilLine class='size-4' />
-          <span>{t('rename_task')}</span>
+          <span>{m.rename_task()}</span>
         </DropdownMenu.Item>
         <DropdownMenu.Item
           variant='destructive'
@@ -96,7 +108,7 @@
           }}
         >
           <Trash2 class='size-4' />
-          <span>{t('delete_task')}</span>
+          <span>{m.delete_task()}</span>
         </DropdownMenu.Item>
       </DropdownMenu.Content>
     </DropdownMenu.Root>

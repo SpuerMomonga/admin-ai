@@ -1,25 +1,18 @@
-import type { ChatMode } from './shared/types'
-import { derived, get, writable } from 'svelte/store'
-import { getSystemPreferencesSnapshot } from './preferences'
-import { settingsStore, updateSettingsSection } from './settings'
-import { persistState, readStoredState, storageKeys } from './shared/storage'
-import { buildAssistantReply, isChatMode } from './shared/task-fixtures'
+import type { ChatMode, PendingTaskComposerState } from '$lib/types/app'
+import { getCurrentLocale } from '$lib/i18n'
+import { persistState, readStoredState, storageKeys } from '$lib/utils/storage'
+import { buildAssistantReply, isChatMode, knowledgeBases } from '$lib/utils/task-fixtures'
+import { derived, writable } from 'svelte/store'
 import { getTasksSnapshot, tasksStore, updateTasksState } from './tasks'
 
-export { knowledgeBases } from './shared/task-fixtures'
-export type { ChatMode } from './shared/types'
-
-export interface PendingTaskComposerState {
-  draft: string
-  mode: ChatMode
-  knowledgeBaseId: string
-}
+export type { ChatMode, PendingTaskComposerState } from '$lib/types/app'
+export { knowledgeBases } from '$lib/utils/task-fixtures'
 
 function createDefaultPendingTaskComposerState(): PendingTaskComposerState {
   return {
     draft: '',
     mode: 'conversation',
-    knowledgeBaseId: get(settingsStore).settings.knowledge.activeBaseId,
+    knowledgeBaseId: knowledgeBases[0]?.id ?? 'ops-playbook',
   }
 }
 
@@ -72,7 +65,6 @@ export function setPendingTaskMode(mode: ChatMode) {
 
 export function setPendingTaskKnowledgeBase(knowledgeBaseId: string) {
   pendingTaskComposer.update(state => ({ ...state, knowledgeBaseId }))
-  updateSettingsSection('knowledge', { activeBaseId: knowledgeBaseId })
 }
 
 export function setTaskDraft(taskId: string, draft: string) {
@@ -98,8 +90,6 @@ export function setTaskKnowledgeBase(taskId: string, knowledgeBaseId: string) {
     ...state,
     tasks: state.tasks.map(task => task.id === taskId ? { ...task, knowledgeBaseId } : task),
   }))
-
-  updateSettingsSection('knowledge', { activeBaseId: knowledgeBaseId })
 }
 
 export function submitTaskDraft(taskId: string) {
@@ -111,7 +101,7 @@ export function submitTaskDraft(taskId: string) {
   }
 
   const prompt = task.draft.trim()
-  const locale = getSystemPreferencesSnapshot().locale
+  const locale = getCurrentLocale()
 
   updateTasksState(state => ({
     ...state,

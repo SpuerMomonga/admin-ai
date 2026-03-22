@@ -1,14 +1,25 @@
-import type { AdminPanel, AdminTabsState } from './shared/types'
+import type { AdminPanel, TabsState } from '$lib/types/app'
+import {
+  defaultAdminPath,
+  normalizeAdminPath,
+  normalizeAdminPathList,
+  orderAdminPaths,
+  resolveAdminPanelFromPathname,
+} from '$lib/admin/paths'
+import { updateTasksState } from '$lib/stores/tasks'
+import { persistState, readStoredState, storageKeys } from '$lib/utils/storage'
 import { writable } from 'svelte/store'
-import { defaultAdminPath, normalizeAdminPath, normalizeAdminPathList, orderAdminPaths, resolveAdminPanelFromPathname } from './shared/admin-paths'
-import { persistState, readStoredState, storageKeys } from './shared/storage'
-import { updateTasksState } from './tasks'
 
-export { buildWorkspacePath, orderAdminPaths, resolveAdminPanelFromPathname, resolveAdminPathFromPathname } from './shared/admin-paths'
-export type { AdminPanel } from './shared/types'
+export {
+  buildWorkspacePath,
+  orderAdminPaths,
+  resolveAdminPanelFromPathname,
+  resolveAdminPathFromPathname,
+} from '$lib/admin/paths'
+export type { AdminPanel } from '$lib/types/app'
 
-function normalizeAdminTabsState(input: unknown): AdminTabsState {
-  const payload = input as Partial<AdminTabsState>
+function normalizeTabsState(input: unknown): TabsState {
+  const payload = input as Partial<TabsState>
   const visitedAdminPaths = normalizeAdminPathList(payload.visitedAdminPaths, [defaultAdminPath])
   const activeAdminPath = visitedAdminPaths.includes(normalizeAdminPath(payload.activeAdminPath))
     ? normalizeAdminPath(payload.activeAdminPath)
@@ -31,8 +42,8 @@ function normalizeAdminTabsState(input: unknown): AdminTabsState {
   }
 }
 
-const initialState = readStoredState<AdminTabsState>(
-  storageKeys.adminTabs,
+const initialState = readStoredState<TabsState>(
+  storageKeys.tabs,
   {
     activeAdminPath: defaultAdminPath,
     visitedAdminPaths: [defaultAdminPath],
@@ -40,17 +51,17 @@ const initialState = readStoredState<AdminTabsState>(
     adminMaximizedPath: null,
     adminSplitPath: null,
   },
-  normalizeAdminTabsState,
+  normalizeTabsState,
 )
 
-const store = writable<AdminTabsState>(initialState)
+const store = writable<TabsState>(initialState)
 
 store.subscribe((value) => {
-  persistState(storageKeys.adminTabs, value)
+  persistState(storageKeys.tabs, value)
 })
 
-function createAdminTabsPatch(
-  state: AdminTabsState,
+function createTabsPatch(
+  state: TabsState,
   {
     visitedAdminPaths,
     activeAdminPath,
@@ -82,10 +93,10 @@ function createAdminTabsPatch(
     adminMaximizedPath: adminMaximizedPath && dedupedVisitedAdminPaths.includes(adminMaximizedPath)
       ? adminMaximizedPath
       : null,
-  } satisfies AdminTabsState
+  } satisfies TabsState
 }
 
-export const adminTabsStore = store
+export const tabsStore = store
 
 export function activateRoute(taskId: string, adminPath: string | AdminPanel) {
   const nextAdminPath = normalizeAdminPath(adminPath)
@@ -95,7 +106,7 @@ export function activateRoute(taskId: string, adminPath: string | AdminPanel) {
     activeTaskId: state.tasks.some(task => task.id === taskId) ? taskId : state.activeTaskId,
   }))
 
-  store.update(state => createAdminTabsPatch(state, {
+  store.update(state => createTabsPatch(state, {
     activeAdminPath: nextAdminPath,
     visitedAdminPaths: state.visitedAdminPaths.includes(nextAdminPath)
       ? state.visitedAdminPaths
@@ -103,7 +114,7 @@ export function activateRoute(taskId: string, adminPath: string | AdminPanel) {
   }))
 }
 
-export function openAdminPath(path: string | AdminPanel, options: { activate?: boolean } = {}) {
+export function openTab(path: string | AdminPanel, options: { activate?: boolean } = {}) {
   const nextAdminPath = normalizeAdminPath(path)
   const shouldActivate = options.activate !== false
 
@@ -113,7 +124,7 @@ export function openAdminPath(path: string | AdminPanel, options: { activate?: b
       : [...state.visitedAdminPaths, nextAdminPath]
     const isSwappingWithSplitPath = shouldActivate && state.adminSplitPath === nextAdminPath && state.activeAdminPath !== nextAdminPath
 
-    return createAdminTabsPatch(state, {
+    return createTabsPatch(state, {
       activeAdminPath: shouldActivate ? nextAdminPath : state.activeAdminPath,
       visitedAdminPaths: nextVisitedAdminPaths,
       adminSplitPath: isSwappingWithSplitPath ? state.activeAdminPath : state.adminSplitPath,
@@ -121,9 +132,9 @@ export function openAdminPath(path: string | AdminPanel, options: { activate?: b
   })
 }
 
-export function closeAdminPath(path: string | AdminPanel) {
+export function closeTab(path: string | AdminPanel) {
   const targetPath = normalizeAdminPath(path)
-  const snapshot = getAdminTabsSnapshot()
+  const snapshot = getTabsSnapshot()
 
   if (snapshot.pinnedAdminPaths.includes(targetPath)) {
     return snapshot.activeAdminPath
@@ -145,7 +156,7 @@ export function closeAdminPath(path: string | AdminPanel) {
       fallbackPath = nextVisitedAdminPaths[0] ?? defaultAdminPath
     }
 
-    return createAdminTabsPatch(state, {
+    return createTabsPatch(state, {
       activeAdminPath: fallbackPath,
       visitedAdminPaths: nextVisitedAdminPaths,
       pinnedAdminPaths: state.pinnedAdminPaths.filter(path => path !== targetPath),
@@ -157,10 +168,10 @@ export function closeAdminPath(path: string | AdminPanel) {
   return fallbackPath
 }
 
-export function pinAdminPath(path: string | AdminPanel) {
+export function pinTab(path: string | AdminPanel) {
   const targetPath = normalizeAdminPath(path)
 
-  store.update(state => createAdminTabsPatch(state, {
+  store.update(state => createTabsPatch(state, {
     activeAdminPath: state.activeAdminPath,
     visitedAdminPaths: state.visitedAdminPaths.includes(targetPath)
       ? state.visitedAdminPaths
@@ -169,17 +180,17 @@ export function pinAdminPath(path: string | AdminPanel) {
   }))
 }
 
-export function unpinAdminPath(path: string | AdminPanel) {
+export function unpinTab(path: string | AdminPanel) {
   const targetPath = normalizeAdminPath(path)
 
-  store.update(state => createAdminTabsPatch(state, {
+  store.update(state => createTabsPatch(state, {
     activeAdminPath: state.activeAdminPath,
     visitedAdminPaths: state.visitedAdminPaths,
     pinnedAdminPaths: state.pinnedAdminPaths.filter(path => path !== targetPath),
   }))
 }
 
-export function closeAdminPathsByDirection(path: string | AdminPanel, direction: 'left' | 'right') {
+export function closeTabsByDirection(path: string | AdminPanel, direction: 'left' | 'right') {
   const targetPath = normalizeAdminPath(path)
 
   store.update((state) => {
@@ -200,23 +211,23 @@ export function closeAdminPathsByDirection(path: string | AdminPanel, direction:
 
     const nextActiveAdminPath = nextVisitedAdminPaths.includes(state.activeAdminPath) ? state.activeAdminPath : targetPath
 
-    return createAdminTabsPatch(state, {
+    return createTabsPatch(state, {
       activeAdminPath: nextActiveAdminPath,
       visitedAdminPaths: nextVisitedAdminPaths,
     })
   })
 }
 
-export function closeOtherAdminPaths(path: string | AdminPanel) {
+export function closeOtherTabs(path: string | AdminPanel) {
   const targetPath = normalizeAdminPath(path)
 
-  store.update(state => createAdminTabsPatch(state, {
+  store.update(state => createTabsPatch(state, {
     activeAdminPath: targetPath,
     visitedAdminPaths: Array.from(new Set([...state.pinnedAdminPaths, targetPath])),
   }))
 }
 
-export function reorderAdminPaths(sourcePath: string | AdminPanel, targetPath: string | AdminPanel) {
+export function reorderTabs(sourcePath: string | AdminPanel, targetPath: string | AdminPanel) {
   const source = normalizeAdminPath(sourcePath)
   const target = normalizeAdminPath(targetPath)
 
@@ -242,16 +253,16 @@ export function reorderAdminPaths(sourcePath: string | AdminPanel, targetPath: s
 
     nextOrderedPaths.splice(targetIndex, 0, movedPath)
 
-    return createAdminTabsPatch(state, {
+    return createTabsPatch(state, {
       activeAdminPath: state.activeAdminPath,
       visitedAdminPaths: nextOrderedPaths,
     })
   })
 }
 
-export function maximizeAdminPath(path: string | AdminPanel) {
+export function maximizeTab(path: string | AdminPanel) {
   const targetPath = normalizeAdminPath(path)
-  openAdminPath(targetPath)
+  openTab(targetPath)
 
   store.update(state => ({
     ...state,
@@ -260,13 +271,13 @@ export function maximizeAdminPath(path: string | AdminPanel) {
   }))
 }
 
-export function restoreAdminPath() {
+export function restoreTab() {
   store.update(state => ({ ...state, adminMaximizedPath: null }))
 }
 
-export function splitAdminPath(path: string | AdminPanel) {
+export function splitTab(path: string | AdminPanel) {
   const targetPath = normalizeAdminPath(path)
-  const snapshot = getAdminTabsSnapshot()
+  const snapshot = getTabsSnapshot()
   const secondaryPath = targetPath === snapshot.activeAdminPath
     ? snapshot.visitedAdminPaths.find(path => path !== snapshot.activeAdminPath) ?? null
     : targetPath
@@ -275,7 +286,7 @@ export function splitAdminPath(path: string | AdminPanel) {
     return false
   }
 
-  openAdminPath(secondaryPath, { activate: false })
+  openTab(secondaryPath, { activate: false })
 
   store.update(state => ({
     ...state,
@@ -286,12 +297,12 @@ export function splitAdminPath(path: string | AdminPanel) {
   return true
 }
 
-export function closeAdminSplit() {
+export function closeSplitTab() {
   store.update(state => ({ ...state, adminSplitPath: null }))
 }
 
-export function swapAdminSplit() {
-  const snapshot = getAdminTabsSnapshot()
+export function swapSplitTab() {
+  const snapshot = getTabsSnapshot()
 
   if (!snapshot.adminSplitPath) {
     return
@@ -302,7 +313,7 @@ export function swapAdminSplit() {
       return state
     }
 
-    return createAdminTabsPatch(state, {
+    return createTabsPatch(state, {
       activeAdminPath: state.adminSplitPath,
       visitedAdminPaths: state.visitedAdminPaths,
       adminSplitPath: state.activeAdminPath,
@@ -310,7 +321,7 @@ export function swapAdminSplit() {
   })
 }
 
-export function getAdminTabsSnapshot() {
+export function getTabsSnapshot() {
   let snapshot = initialState
   store.subscribe(value => snapshot = value)()
   return {

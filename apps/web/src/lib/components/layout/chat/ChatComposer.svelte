@@ -4,7 +4,7 @@
   import AppSelect from '$lib/components/ui/app-select.svelte'
   import { Button } from '$lib/components/ui/button'
   import { Textarea } from '$lib/components/ui/textarea'
-  import { buildWorkspacePath } from '$lib/stores/admin-tabs'
+  import { m } from '$lib/paraglide/messages.js'
   import {
     knowledgeBases,
     pendingTaskComposerStore,
@@ -17,15 +17,15 @@
     setTaskMode,
     submitTaskDraft,
   } from '$lib/stores/conversation'
-  import { translate as t } from '$lib/stores/i18n'
+  import { buildWorkspacePath } from '$lib/stores/tabs'
   import { createTask, tasksStore } from '$lib/stores/tasks'
   import { SendHorizontal } from '@lucide/svelte'
 
   const { taskId, adminPath } = $props<{ taskId: string | null, adminPath: string }>()
   const activeTask = $derived($tasksStore.tasks.find(task => task.id === taskId) ?? null)
   const modeOptions = $derived.by(() => [
-    { value: 'conversation', label: t('conversation_mode') },
-    { value: 'operation', label: t('operation_mode') },
+    { value: 'conversation', label: m.conversation_mode() },
+    { value: 'operation', label: m.operation_mode() },
   ] satisfies Array<{ value: ChatMode, label: string }>)
   const knowledgeBaseOptions = $derived.by(() => knowledgeBases.map(knowledgeBase => ({
     value: knowledgeBase.id,
@@ -70,7 +70,7 @@
       <Textarea
         class='min-h-18 resize-none border-0 bg-transparent px-0 py-0 shadow-none focus-visible:ring-0'
         value={activeTask.draft}
-        placeholder={t('composer_placeholder')}
+        placeholder={m.composer_placeholder()}
         onkeydown={handleKeydown}
         oninput={event => taskId && setTaskDraft(taskId, event.currentTarget.value)}
       />
@@ -86,7 +86,7 @@
               plainWhenSelected={true}
               value={activeTask.mode}
               options={modeOptions}
-              placeholder={t('active_mode')}
+              placeholder={m.active_mode()}
               onValueChange={value => taskId && setTaskMode(taskId, value as ChatMode)}
             />
           </div>
@@ -100,7 +100,7 @@
               plainWhenSelected={true}
               value={activeTask.knowledgeBaseId}
               options={knowledgeBaseOptions}
-              placeholder={t('knowledge_base_label')}
+              placeholder={m.knowledge_base_label()}
               onValueChange={value => taskId && setTaskKnowledgeBase(taskId, value)}
             />
           </div>
@@ -109,8 +109,8 @@
         <Button
           variant='default'
           size='icon-sm'
-          aria-label={t('send')}
-          title={t('send')}
+          aria-label={m.send()}
+          title={m.send()}
           onclick={() => void submit()}
         >
           <SendHorizontal class='size-4' />
@@ -124,7 +124,7 @@
       <Textarea
         class='min-h-18 resize-none border-0 bg-transparent px-0 py-0 shadow-none focus-visible:ring-0'
         value={$pendingTaskComposerStore.draft}
-        placeholder={t('composer_placeholder')}
+        placeholder={m.composer_placeholder()}
         onkeydown={handleKeydown}
         oninput={event => setPendingTaskDraft(event.currentTarget.value)}
       />
@@ -140,7 +140,7 @@
               plainWhenSelected={true}
               value={$pendingTaskComposerStore.mode}
               options={modeOptions}
-              placeholder={t('active_mode')}
+              placeholder={m.active_mode()}
               onValueChange={value => setPendingTaskMode(value as ChatMode)}
             />
           </div>
@@ -154,7 +154,7 @@
               plainWhenSelected={true}
               value={$pendingTaskComposerStore.knowledgeBaseId}
               options={knowledgeBaseOptions}
-              placeholder={t('knowledge_base_label')}
+              placeholder={m.knowledge_base_label()}
               onValueChange={value => setPendingTaskKnowledgeBase(value)}
             />
           </div>
@@ -163,8 +163,8 @@
         <Button
           variant='default'
           size='icon-sm'
-          aria-label={t('send')}
-          title={t('send')}
+          aria-label={m.send()}
+          title={m.send()}
           onclick={() => void submit()}
         >
           <SendHorizontal class='size-4' />

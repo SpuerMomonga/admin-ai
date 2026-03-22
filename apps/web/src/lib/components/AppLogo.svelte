@@ -1,5 +1,5 @@
 <script lang='ts'>
-  import { translate as t } from '$lib/stores/i18n'
+  import { m } from '$lib/paraglide/messages.js'
 
   const {
     collapsed = false,
@@ -17,7 +17,7 @@
     <div class='min-w-0'>
       <p class='truncate text-sm font-semibold tracking-tight text-foreground'>admin-ai</p>
       {#if showSubtitle}
-        <p class='truncate text-[11px] text-muted-foreground'>{t('app_logo_subtitle')}</p>
+        <p class='truncate text-[11px] text-muted-foreground'>{m.app_logo_subtitle()}</p>
       {/if}
     </div>
   {/if}

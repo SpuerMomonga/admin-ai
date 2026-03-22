@@ -1,6 +1,6 @@
-import type { TranslationKey } from '$lib/stores/i18n'
-import type { AdminPanel } from '$lib/stores/shared/types'
+import type { AdminPanel } from '$lib/types/app'
 import type { Component } from 'svelte'
+import { m } from '$lib/paraglide/messages.js'
 import AccountPage from '../../routes/(workspace)/account/+page.svelte'
 import GeneralPage from '../../routes/(workspace)/general/+page.svelte'
 import KnowledgePage from '../../routes/(workspace)/knowledge/+page.svelte'
@@ -11,11 +11,12 @@ import RulesPage from '../../routes/(workspace)/rules/+page.svelte'
 const adminRouteTitleSegmentPattern = /[-_]/g
 
 export type AdminMenuIconKey = 'dashboard' | 'user' | 'models' | 'knowledge' | 'rules' | 'settings'
+type TitleMessage = () => string
 
 export interface AdminRouteDefinition {
   path: string
   panel: AdminPanel
-  titleKey: TranslationKey
+  titleMessage: TitleMessage
   menu: boolean
   order: number
   component: Component<any>
@@ -23,7 +24,7 @@ export interface AdminRouteDefinition {
 
 export interface AdminMenuNode {
   id: string
-  titleKey: TranslationKey
+  titleMessage: TitleMessage
   icon?: AdminMenuIconKey
   path?: string
   clickable?: boolean
@@ -34,7 +35,7 @@ export const adminRouteDefinitions = [
   {
     path: '/general',
     panel: 'general',
-    titleKey: 'panel_general',
+    titleMessage: m.panel_general,
     menu: true,
     order: 0,
     component: GeneralPage,
@@ -42,7 +43,7 @@ export const adminRouteDefinitions = [
   {
     path: '/preferences',
     panel: 'preferences',
-    titleKey: 'panel_preferences',
+    titleMessage: m.panel_preferences,
     menu: true,
     order: 1,
     component: PreferencesPage,
@@ -50,7 +51,7 @@ export const adminRouteDefinitions = [
   {
     path: '/account',
     panel: 'account',
-    titleKey: 'panel_account',
+    titleMessage: m.panel_account,
     menu: true,
     order: 2,
     component: AccountPage,
@@ -58,7 +59,7 @@ export const adminRouteDefinitions = [
   {
     path: '/models',
     panel: 'models',
-    titleKey: 'panel_models',
+    titleMessage: m.panel_models,
     menu: true,
     order: 3,
     component: ModelsPage,
@@ -66,7 +67,7 @@ export const adminRouteDefinitions = [
   {
     path: '/knowledge',
     panel: 'knowledge',
-    titleKey: 'panel_knowledge',
+    titleMessage: m.panel_knowledge,
     menu: true,
     order: 4,
     component: KnowledgePage,
@@ -74,7 +75,7 @@ export const adminRouteDefinitions = [
   {
     path: '/rules',
     panel: 'rules',
-    titleKey: 'panel_rules',
+    titleMessage: m.panel_rules,
     menu: true,
     order: 5,
     component: RulesPage,
@@ -84,35 +85,35 @@ export const adminRouteDefinitions = [
 export const adminMenuTree = [
   {
     id: 'overview',
-    titleKey: 'admin_group_overview',
+    titleMessage: m.admin_group_overview,
     icon: 'dashboard',
     path: '/general',
   },
   {
     id: 'workspace',
-    titleKey: 'admin_group_workspace',
+    titleMessage: m.admin_group_workspace,
     icon: 'settings',
     children: [
       {
         id: 'preferences',
-        titleKey: 'panel_preferences',
+        titleMessage: m.panel_preferences,
         icon: 'settings',
         path: '/preferences',
       },
       {
         id: 'account',
-        titleKey: 'panel_account',
+        titleMessage: m.panel_account,
         icon: 'user',
         path: '/account',
       },
       {
         id: 'policies',
-        titleKey: 'admin_group_policies',
+        titleMessage: m.admin_group_policies,
         icon: 'rules',
         children: [
           {
             id: 'rules',
-            titleKey: 'panel_rules',
+            titleMessage: m.panel_rules,
             icon: 'rules',
             path: '/rules',
           },
@@ -122,23 +123,23 @@ export const adminMenuTree = [
   },
   {
     id: 'intelligence',
-    titleKey: 'admin_group_intelligence',
+    titleMessage: m.admin_group_intelligence,
     icon: 'models',
     children: [
       {
         id: 'models',
-        titleKey: 'panel_models',
+        titleMessage: m.panel_models,
         icon: 'models',
         path: '/models',
       },
       {
         id: 'knowledge-stack',
-        titleKey: 'admin_group_knowledge',
+        titleMessage: m.admin_group_knowledge,
         icon: 'knowledge',
         children: [
           {
             id: 'knowledge',
-            titleKey: 'panel_knowledge',
+            titleMessage: m.panel_knowledge,
             icon: 'knowledge',
             path: '/knowledge',
           },
@@ -182,8 +183,8 @@ export function getAdminRouteComponent(path: string) {
   return findAdminRoute(path)?.component ?? null
 }
 
-export function getAdminRouteTitleKey(path: string) {
-  return findAdminRoute(path)?.titleKey ?? null
+export function getAdminRouteTitle(path: string) {
+  return findAdminRoute(path)?.titleMessage() ?? null
 }
 
 export function formatAdminRouteFallbackTitle(path: string) {

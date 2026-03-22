@@ -2,7 +2,7 @@
   import type { AdminMenuNode } from '$lib/admin/routes'
   import type { Snippet } from 'svelte'
   import { goto } from '$app/navigation'
-  import { adminMenuTree, formatAdminRouteFallbackTitle, getAdminRouteTitleKey } from '$lib/admin/routes'
+  import { adminMenuTree, formatAdminRouteFallbackTitle, getAdminRouteTitle } from '$lib/admin/routes'
   import AdminBreadcrumb from '$lib/components/layout/admin/AdminBreadcrumb.svelte'
   import AdminPageRenderer from '$lib/components/layout/admin/AdminPageRenderer.svelte'
   import AdminSidebarNav from '$lib/components/layout/admin/AdminSidebarNav.svelte'
@@ -12,19 +12,19 @@
   import { ScrollArea } from '$lib/components/ui/scroll-area'
   import { Separator } from '$lib/components/ui/separator'
   import TooltipButton from '$lib/components/ui/tooltip-button.svelte'
+  import { m } from '$lib/paraglide/messages.js'
+  import { appStateStore, toggleRightCollapsed } from '$lib/stores/app-state'
+  import { preferencesStore } from '$lib/stores/preferences'
   import {
-    openAdminPath as activateAdminPath,
-    adminTabsStore,
+    openTab as activateAdminPath,
     buildWorkspacePath,
-    closeAdminSplit,
-    maximizeAdminPath,
+    closeSplitTab,
+    maximizeTab,
     orderAdminPaths,
-    restoreAdminPath,
-    swapAdminSplit,
-  } from '$lib/stores/admin-tabs'
-  import { translate as t } from '$lib/stores/i18n'
-  import { navigationStore, toggleRightCollapsed } from '$lib/stores/navigation'
-  import { systemPreferencesStore } from '$lib/stores/preferences'
+    restoreTab,
+    swapSplitTab,
+    tabsStore,
+  } from '$lib/stores/tabs'
   import {
     BookOpenText,
     Columns2,
@@ -48,17 +48,17 @@
     routeChildren?: Snippet
   }>()
 
-  const currentAdminPath = $derived($adminTabsStore.activeAdminPath)
-  const orderedAdminTabs = $derived(orderAdminPaths($adminTabsStore.visitedAdminPaths, $adminTabsStore.pinnedAdminPaths))
-  const splitAdminPath = $derived($adminTabsStore.adminSplitPath)
-  const maximizedAdminPath = $derived($adminTabsStore.adminMaximizedPath)
-  const adminNavMode = $derived($systemPreferencesStore.adminNavigationMode)
+  const currentAdminPath = $derived($tabsStore.activeAdminPath)
+  const orderedAdminTabs = $derived(orderAdminPaths($tabsStore.visitedAdminPaths, $tabsStore.pinnedAdminPaths))
+  const splitAdminPath = $derived($tabsStore.adminSplitPath)
+  const maximizedAdminPath = $derived($tabsStore.adminMaximizedPath)
+  const adminNavMode = $derived($preferencesStore.adminNavigationMode)
+  const showAdminTabBar = $derived($preferencesStore.adminTabBarVisible)
   let refreshVersionByPath = $state<Record<string, number>>({})
   let refreshingByPath = $state<Record<string, boolean>>({})
 
   function getAdminTitle(path: string) {
-    const titleKey = getAdminRouteTitleKey(path)
-    return titleKey ? t(titleKey) : formatAdminRouteFallbackTitle(path)
+    return getAdminRouteTitle(path) ?? formatAdminRouteFallbackTitle(path)
   }
 
   function getNodeDefaultPath(node: AdminMenuNode): string | null {
@@ -82,7 +82,7 @@
   }
 
   async function syncAdminRoute(replaceState = false) {
-    const nextAdminPath = $adminTabsStore.activeAdminPath
+    const nextAdminPath = $tabsStore.activeAdminPath
 
     if (nextAdminPath === adminPath) {
       return
@@ -131,11 +131,11 @@
   <div class='flex items-center gap-1.5'>
     {#if splitAdminPath}
       <TooltipButton
-        content={t('admin_tab_unsplit')}
+        content={m.admin_tab_unsplit()}
         side='left'
         class='shell-panel-toggle-button'
-        aria-label={t('admin_tab_unsplit')}
-        onclick={closeAdminSplit}
+        aria-label={m.admin_tab_unsplit()}
+        onclick={closeSplitTab}
       >
         <SquareSplitHorizontal class='size-4' />
       </TooltipButton>
@@ -143,21 +143,21 @@
 
     {#if maximizedAdminPath}
       <TooltipButton
-        content={t('admin_tab_restore')}
+        content={m.admin_tab_restore()}
         side='left'
         class='shell-panel-toggle-button'
-        aria-label={t('admin_tab_restore')}
-        onclick={restoreAdminPath}
+        aria-label={m.admin_tab_restore()}
+        onclick={restoreTab}
       >
         <Minimize2 class='size-4' />
       </TooltipButton>
     {/if}
 
     <TooltipButton
-      content={t('collapse_right')}
+      content={m.collapse_right()}
       side='left'
       class='shell-panel-toggle-button'
-      aria-label={t('collapse_right')}
+      aria-label={m.collapse_right()}
       onclick={toggleRightCollapsed}
     >
       <PanelRightClose class='size-4' />
@@ -167,10 +167,10 @@
 
 {#snippet refreshButton(path: string)}
   <TooltipButton
-    content={t('admin_page_refresh')}
+    content={m.admin_page_refresh()}
     side='right'
     class='shell-panel-toggle-button'
-    aria-label={t('admin_page_refresh')}
+    aria-label={m.admin_page_refresh()}
     onclick={() => refreshPage(path)}
   >
     {#if refreshingByPath[path]}
@@ -189,15 +189,15 @@
           <header class='flex items-center justify-between border-b border-shell-border px-1 py-2'>
             <div class='min-w-0'>
               <p class='truncate text-sm font-semibold text-foreground'>{getAdminTitle(currentAdminPath)}</p>
-              <p class='text-[11px] text-muted-foreground'>{t('admin_split_primary')}</p>
+              <p class='text-[11px] text-muted-foreground'>{m.admin_split_primary()}</p>
             </div>
 
             <Button
               variant='ghost'
               size='icon-xs'
-              aria-label={t('admin_tab_maximize')}
+              aria-label={m.admin_tab_maximize()}
               onclick={() => {
-                maximizeAdminPath(currentAdminPath)
+                maximizeTab(currentAdminPath)
                 void syncAdminRoute()
               }}
             >
@@ -216,16 +216,16 @@
           <header class='flex items-center justify-between border-b border-shell-border px-1 py-2'>
             <div class='min-w-0'>
               <p class='truncate text-sm font-semibold text-foreground'>{getAdminTitle(splitAdminPath)}</p>
-              <p class='text-[11px] text-muted-foreground'>{t('admin_split_secondary')}</p>
+              <p class='text-[11px] text-muted-foreground'>{m.admin_split_secondary()}</p>
             </div>
 
             <div class='flex items-center gap-1'>
               <Button
                 variant='ghost'
                 size='icon-xs'
-                aria-label={t('admin_split_focus')}
+                aria-label={m.admin_split_focus()}
                 onclick={() => {
-                  swapAdminSplit()
+                  swapSplitTab()
                   void syncAdminRoute()
                 }}
               >
@@ -234,9 +234,9 @@
               <Button
                 variant='ghost'
                 size='icon-xs'
-                aria-label={t('admin_tab_maximize')}
+                aria-label={m.admin_tab_maximize()}
                 onclick={() => {
-                  maximizeAdminPath(splitAdminPath)
+                  maximizeTab(splitAdminPath)
                   void syncAdminRoute()
                 }}
               >
@@ -258,8 +258,8 @@
   </div>
 {/snippet}
 
-<section class={`workspace-pane workspace-right-pane h-full min-h-0 ${$navigationStore.rightCollapsed ? 'flex w-full flex-col items-center gap-2 px-1.5 py-2 xl:w-14' : 'flex min-w-0 flex-col overflow-hidden px-2 py-2'}`}>
-  {#if !$navigationStore.rightCollapsed}
+<section class={`workspace-pane workspace-right-pane h-full min-h-0 ${$appStateStore.rightCollapsed ? 'flex w-full flex-col items-center gap-2 px-1.5 py-2 xl:w-14' : 'flex min-w-0 flex-col overflow-hidden px-2 py-2'}`}>
+  {#if !$appStateStore.rightCollapsed}
     {#if adminNavMode === 'sidebar'}
       <div class='flex min-h-0 flex-1 flex-col overflow-hidden'>
         <header class='border-b border-shell-border pb-2'>
@@ -277,18 +277,20 @@
           <Separator orientation='vertical' class='bg-shell-border/80' />
 
           <div class='flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden'>
-            <div class='py-0.5'>
-              <AdminTabBar
-                {taskId}
-                paths={orderedAdminTabs}
-                activePath={currentAdminPath}
-                splitPath={splitAdminPath}
-                maximizedPath={maximizedAdminPath}
-                pinnedPaths={$adminTabsStore.pinnedAdminPaths}
-                getTitle={getAdminTitle}
-              />
-            </div>
-            <Separator />
+            {#if showAdminTabBar}
+              <div class='py-0.5'>
+                <AdminTabBar
+                  {taskId}
+                  paths={orderedAdminTabs}
+                  activePath={currentAdminPath}
+                  splitPath={splitAdminPath}
+                  maximizedPath={maximizedAdminPath}
+                  pinnedPaths={$tabsStore.pinnedAdminPaths}
+                  getTitle={getAdminTitle}
+                />
+              </div>
+              <Separator />
+            {/if}
             {@render pageViewport()}
           </div>
         </div>
@@ -304,18 +306,20 @@
             {@render headerControls()}
           </div>
           <Separator class='mt-1.5 bg-shell-border/80' />
-          <div class='py-0.5'>
-            <AdminTabBar
-              {taskId}
-              paths={orderedAdminTabs}
-              activePath={currentAdminPath}
-              splitPath={splitAdminPath}
-              maximizedPath={maximizedAdminPath}
-              pinnedPaths={$adminTabsStore.pinnedAdminPaths}
-              getTitle={getAdminTitle}
-            />
-          </div>
-          <Separator class='bg-shell-border/80' />
+          {#if showAdminTabBar}
+            <div class='py-0.5'>
+              <AdminTabBar
+                {taskId}
+                paths={orderedAdminTabs}
+                activePath={currentAdminPath}
+                splitPath={splitAdminPath}
+                maximizedPath={maximizedAdminPath}
+                pinnedPaths={$tabsStore.pinnedAdminPaths}
+                getTitle={getAdminTitle}
+              />
+            </div>
+            <Separator class='bg-shell-border/80' />
+          {/if}
         </header>
 
         {@render pageViewport()}
@@ -323,10 +327,10 @@
     {/if}
   {:else}
     <TooltipButton
-      content={t('expand_right')}
+      content={m.expand_right()}
       side='left'
       class='shell-panel-toggle-button'
-      aria-label={t('expand_right')}
+      aria-label={m.expand_right()}
       onclick={toggleRightCollapsed}
     >
       <PanelRightOpen class='size-4' />
@@ -341,7 +345,7 @@
             variant={isActiveBranch ? 'default' : 'outline'}
             size='icon-sm'
             class='rounded-[7px]'
-            title={t(node.titleKey)}
+            title={node.titleMessage()}
             onclick={() => openAdminPath(targetPath)}
           >
             {#if node.icon === 'dashboard'}
@@ -372,8 +376,8 @@
         <Button
           variant='outline'
           size='icon-sm'
-          aria-label={t('admin_tab_restore')}
-          onclick={restoreAdminPath}
+          aria-label={m.admin_tab_restore()}
+          onclick={restoreTab}
         >
           <Minimize2 class='size-4' />
         </Button>

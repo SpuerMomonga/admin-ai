@@ -1,6 +1,8 @@
-import type { AppLocale } from '$lib/stores/i18n'
-import type { ThemePreference } from '$lib/stores/theme'
+import type { locales } from '$lib/paraglide/runtime.js'
 
+export type AppLocale = typeof locales[number]
+export type ThemePreference = 'system' | 'light' | 'dark'
+export type ThemeMode = 'light' | 'dark'
 export type TaskStatus = 'in_progress' | 'completed' | 'failed'
 export type ChatMode = 'conversation' | 'operation'
 export type AdminPanel = 'general' | 'preferences' | 'account' | 'models' | 'knowledge' | 'rules'
@@ -26,29 +28,16 @@ export interface TaskRecord {
   messages: ChatMessage[]
 }
 
-export interface AccountSettings {
+export interface UserInfo {
   displayName: string
   email: string
   role: string
+  plan: string
 }
 
-export interface ModelSettings {
-  primaryModel: string
-  operationModel: string
-  routingPolicy: string
-}
-
-export interface KnowledgeSettings {
-  activeBaseId: string
-  queryScope: 'current' | 'global'
-  searchQuery: string
-}
-
-export interface RuleSettings {
-  approvalMode: 'manual' | 'guided'
-  responseStyle: 'compact' | 'structured'
-  cachePolicy: 'session_and_reload' | 'session_only'
-  executionPolicy: 'safe_first' | 'balanced'
+export interface AuthState {
+  isLoggedIn: boolean
+  user: UserInfo
 }
 
 export interface ColumnWidths {
@@ -56,28 +45,42 @@ export interface ColumnWidths {
   right: number
 }
 
-export interface SessionState {
-  isLoggedIn: boolean
-  plan: string
+export interface ResizeState {
+  activeHandle: 'left' | 'right' | null
+  isResizing: boolean
+  pointerX: number | null
 }
 
-export interface SystemPreferencesState {
+export interface PreferencesState {
   locale: AppLocale
   themePreference: ThemePreference
   adminNavigationMode: AdminNavigationMode
+  adminTabBarVisible: boolean
 }
 
-export interface NavigationState {
+export interface AppState {
   leftCollapsed: boolean
   rightCollapsed: boolean
   adminSidebarCollapsed: boolean
   columnWidths: ColumnWidths
+  resizeState: ResizeState
 }
 
-export interface AdminTabsState {
+export interface TabsState {
   activeAdminPath: string
   visitedAdminPaths: string[]
   pinnedAdminPaths: string[]
   adminMaximizedPath: string | null
   adminSplitPath: string | null
+}
+
+export interface TasksState {
+  activeTaskId: string
+  tasks: TaskRecord[]
+}
+
+export interface PendingTaskComposerState {
+  draft: string
+  mode: ChatMode
+  knowledgeBaseId: string
 }
