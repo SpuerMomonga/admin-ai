@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation'
   import * as ContextMenu from '$lib/components/ui/context-menu'
   import { ScrollArea } from '$lib/components/ui/scroll-area'
-  import { m } from '$lib/paraglide/messages.js'
+  import { m } from '$lib/paraglide/messages'
   import {
     buildWorkspacePath,
     closeOtherTabs,

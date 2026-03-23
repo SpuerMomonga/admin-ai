@@ -1,6 +1,6 @@
 <script lang='ts'>
   import { Card } from '$lib/components/ui/card'
-  import { m } from '$lib/paraglide/messages.js'
+  import { m } from '$lib/paraglide/messages'
 
   const ruleFields = $derived.by(() => [
     { label: m.rules_approval_label(), value: m.rules_approval_guided() },

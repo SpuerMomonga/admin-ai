@@ -1,5 +1,7 @@
 {
   "$schema": "https://inlang.com/schema/inlang-message-format",
+  "feedback_issue": "\u53cd\u9988\u95ee\u9898",
+  "help_docs": "\u5e2e\u52a9\u6587\u6863",
   "account_description": "更新管理员显示名、邮箱与角色信息。",
   "account_email_label": "邮箱",
   "account_label": "账号",

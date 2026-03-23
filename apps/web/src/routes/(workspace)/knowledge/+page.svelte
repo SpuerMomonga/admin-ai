@@ -1,6 +1,6 @@
 <script lang='ts'>
   import { Card } from '$lib/components/ui/card'
-  import { m } from '$lib/paraglide/messages.js'
+  import { m } from '$lib/paraglide/messages'
   import { knowledgeBases } from '$lib/stores/conversation'
 
   const knowledgeSummary = $derived.by(() => [

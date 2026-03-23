@@ -1,7 +1,7 @@
 <script lang='ts'>
   import { adminMenuTree, findAdminMenuTrailByPath } from '$lib/admin/routes'
   import * as Breadcrumb from '$lib/components/ui/breadcrumb'
-  import { m } from '$lib/paraglide/messages.js'
+  import { m } from '$lib/paraglide/messages'
 
   const {
     path,

@@ -4,7 +4,7 @@
   import { page } from '$app/state'
   import { Badge } from '$lib/components/ui/badge'
   import { Card } from '$lib/components/ui/card'
-  import { m } from '$lib/paraglide/messages.js'
+  import { m } from '$lib/paraglide/messages'
   import { knowledgeBases } from '$lib/stores/conversation'
   import { preferencesStore } from '$lib/stores/preferences'
   import { tasksStore } from '$lib/stores/tasks'

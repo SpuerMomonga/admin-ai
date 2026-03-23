@@ -4,7 +4,7 @@
   import AppSelect from '$lib/components/ui/app-select.svelte'
   import { Button } from '$lib/components/ui/button'
   import { Textarea } from '$lib/components/ui/textarea'
-  import { m } from '$lib/paraglide/messages.js'
+  import { m } from '$lib/paraglide/messages'
   import {
     knowledgeBases,
     pendingTaskComposerStore,

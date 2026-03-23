@@ -1,7 +1,7 @@
 <script lang='ts'>
   import { formatAdminRouteFallbackTitle, getAdminRouteComponent, getAdminRouteTitle } from '$lib/admin/routes'
   import { Card } from '$lib/components/ui/card'
-  import { m } from '$lib/paraglide/messages.js'
+  import { m } from '$lib/paraglide/messages'
   import { fly } from 'svelte/transition'
 
   const { path, refreshKey = 0 }: { path: string, refreshKey?: number } = $props()

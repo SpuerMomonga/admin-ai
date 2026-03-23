@@ -1,7 +1,7 @@
 <script lang='ts'>
   import favicon from '$lib/assets/favicon.svg'
   import { TooltipProvider } from '$lib/components/ui/tooltip'
-  import { syncDocumentLocale } from '$lib/i18n'
+  import { localeStore, syncDocumentLocale } from '$lib/i18n'
   import { hydrateAuth } from '$lib/stores/auth'
   import { applyDocumentTheme, getPreferencesSnapshot, watchSystemTheme } from '$lib/stores/preferences'
   import { onMount } from 'svelte'
@@ -24,5 +24,7 @@
 <svelte:head><link rel='icon' href={favicon} /></svelte:head>
 
 <TooltipProvider delayDuration={180} skipDelayDuration={80}>
-  {@render children()}
+  {#key $localeStore}
+    {@render children()}
+  {/key}
 </TooltipProvider>

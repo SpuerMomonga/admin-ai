@@ -1,6 +1,6 @@
 <script lang='ts'>
   import { Card } from '$lib/components/ui/card'
-  import { m } from '$lib/paraglide/messages.js'
+  import { m } from '$lib/paraglide/messages'
   import { authStore } from '$lib/stores/auth'
 
   const profileFields = $derived.by(() => [

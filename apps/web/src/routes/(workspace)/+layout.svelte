@@ -7,7 +7,7 @@
   import ChatColumn from '$lib/components/layout/ChatColumn.svelte'
   import ColumnResizeHandle from '$lib/components/layout/ColumnResizeHandle.svelte'
   import TaskRail from '$lib/components/layout/TaskRail.svelte'
-  import { m } from '$lib/paraglide/messages.js'
+  import { m } from '$lib/paraglide/messages'
   import {
     appStateStore,
     endColumnResize,

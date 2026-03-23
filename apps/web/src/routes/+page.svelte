@@ -1,6 +1,6 @@
 <script lang='ts'>
   import { goto } from '$app/navigation'
-  import { m } from '$lib/paraglide/messages.js'
+  import { m } from '$lib/paraglide/messages'
   import { getAuthSnapshot, hydrateAuth } from '$lib/stores/auth'
   import { buildWorkspacePath, getTabsSnapshot } from '$lib/stores/tabs'
   import { getTasksSnapshot } from '$lib/stores/tasks'

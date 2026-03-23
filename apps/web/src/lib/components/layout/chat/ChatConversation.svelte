@@ -3,7 +3,7 @@
   import { Button } from '$lib/components/ui/button'
   import { ScrollArea } from '$lib/components/ui/scroll-area'
   import TooltipButton from '$lib/components/ui/tooltip-button.svelte'
-  import { m } from '$lib/paraglide/messages.js'
+  import { m } from '$lib/paraglide/messages'
   import { setMessageFeedback, setPendingTaskDraft } from '$lib/stores/conversation'
   import { preferencesStore } from '$lib/stores/preferences'
   import { tasksStore } from '$lib/stores/tasks'

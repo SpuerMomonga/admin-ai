@@ -1,6 +1,6 @@
 <script lang='ts'>
   import { Card } from '$lib/components/ui/card'
-  import { m } from '$lib/paraglide/messages.js'
+  import { m } from '$lib/paraglide/messages'
 
   const modelFields = $derived.by(() => [
     { label: m.models_primary_label(), value: 'GPT-5.4' },

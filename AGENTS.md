@@ -20,6 +20,7 @@
 - `apps/web` uses local `shadcn-svelte` components configured through `apps/web/components.json`. If a page or interaction appears to need a reusable UI primitive, read `.codex/skills/shadcn-svelte-component-guide/SKILL.md` before writing custom markup or wrappers.
 - `apps/web/src/routes/layout.css` is the Tailwind entry and the source of app-wide design tokens.
 - User-facing copy in `apps/web` must go through `@inlang/paraglide-js`; do not introduce a second i18n path for route text, menus, breadcrumbs, or shell actions.
+- Do not manually edit `apps/web/src/lib/paraglide/*` output files. The Vite Paraglide plugin generates and refreshes those artifacts automatically.
 - Theme tokens should be defined with Tailwind `@theme` in `apps/web/src/routes/layout.css`; the console brand primary is `#004EA2`.
 - The console UI must support both light and dark appearance and stay visually compact. Avoid oversized radii, padding, and shell-level spacing.
 - Locale switching must not be encoded into the URL. Persist locale in client state plus durable storage.

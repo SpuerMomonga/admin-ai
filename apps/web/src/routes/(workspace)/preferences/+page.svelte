@@ -2,7 +2,7 @@
   import type { AdminNavigationMode, AppLocale, ThemePreference } from '$lib/types/app'
   import AppSelect from '$lib/components/ui/app-select.svelte'
   import { Card } from '$lib/components/ui/card'
-  import { m } from '$lib/paraglide/messages.js'
+  import { m } from '$lib/paraglide/messages'
   import { preferencesStore, updatePreference } from '$lib/stores/preferences'
   import { MoonStar, SunMedium } from '@lucide/svelte'
 

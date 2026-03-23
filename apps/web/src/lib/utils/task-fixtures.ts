@@ -1,7 +1,7 @@
 import type { AppLocale, ChatMessage, ChatMode, TaskRecord, TaskStatus } from '$lib/types/app'
 import { browser } from '$app/environment'
 import { getCurrentLocale } from '$lib/i18n'
-import { m } from '$lib/paraglide/messages.js'
+import { m } from '$lib/paraglide/messages'
 
 export const chatModes = ['conversation', 'operation'] as const satisfies ReadonlyArray<ChatMode>
 export const knowledgeBases = [

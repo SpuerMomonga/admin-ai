@@ -6,7 +6,7 @@
   import { Checkbox } from '$lib/components/ui/checkbox'
   import { Input } from '$lib/components/ui/input'
   import { Label } from '$lib/components/ui/label'
-  import { m } from '$lib/paraglide/messages.js'
+  import { m } from '$lib/paraglide/messages'
   import { getAuthSnapshot, hydrateAuth, login } from '$lib/stores/auth'
   import { buildWorkspacePath, getTabsSnapshot } from '$lib/stores/tabs'
   import { getTasksSnapshot } from '$lib/stores/tasks'

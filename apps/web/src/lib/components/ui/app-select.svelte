@@ -37,19 +37,15 @@
       ? 'border-transparent bg-transparent shadow-none hover:border-transparent hover:bg-transparent focus-visible:border-transparent focus-visible:ring-0'
       : '',
   )
-  let hasMounted = false
-
-  $effect(() => {
-    if (!hasMounted) {
-      hasMounted = true
-      return
-    }
-
-    onValueChange?.(value)
-  })
 </script>
 
-<Select.Root type='single' bind:value={value as never} {disabled}>
+<Select.Root
+  type='single'
+  bind:value={value as never}
+  items={options}
+  {disabled}
+  onValueChange={nextValue => onValueChange?.(nextValue)}
+>
   <Select.Trigger class={cn('w-full justify-between', className, triggerStateClass, triggerClass)} {size}>
     <span
       data-slot='select-value'

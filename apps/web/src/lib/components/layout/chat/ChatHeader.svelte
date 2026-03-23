@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation'
   import AppLogo from '$lib/components/AppLogo.svelte'
   import TooltipButton from '$lib/components/ui/tooltip-button.svelte'
-  import { m } from '$lib/paraglide/messages.js'
+  import { m } from '$lib/paraglide/messages'
   import { appStateStore, setLeftCollapsed, setRightCollapsed } from '$lib/stores/app-state'
   import { resetPendingTaskComposer } from '$lib/stores/conversation'
   import { buildWorkspacePath } from '$lib/stores/tabs'

@@ -12,7 +12,7 @@
   import { ScrollArea } from '$lib/components/ui/scroll-area'
   import { Separator } from '$lib/components/ui/separator'
   import TooltipButton from '$lib/components/ui/tooltip-button.svelte'
-  import { m } from '$lib/paraglide/messages.js'
+  import { m } from '$lib/paraglide/messages'
   import { appStateStore, toggleRightCollapsed } from '$lib/stores/app-state'
   import { preferencesStore } from '$lib/stores/preferences'
   import {

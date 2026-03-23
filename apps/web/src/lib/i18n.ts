@@ -1,8 +1,10 @@
 import type { AppLocale } from '$lib/types/app'
 import { browser } from '$app/environment'
 import { getLocale, getTextDirection, locales, setLocale } from '$lib/paraglide/runtime.js'
+import { writable } from 'svelte/store'
 
 export const availableLocales = locales as readonly AppLocale[]
+export const localeStore = writable<AppLocale>(browser ? getCurrentLocale() : 'zh-CN')
 
 export function normalizeLocale(value: unknown): AppLocale {
   return value === 'en' ? 'en' : 'zh-CN'
@@ -31,8 +33,16 @@ export function setAppLocale(locale: AppLocale) {
     return locale
   }
 
-  void setLocale(locale, { reload: false })
+  const result = setLocale(locale, { reload: false })
+  localeStore.set(locale)
   applyDocumentLocale(locale)
+
+  if (result instanceof Promise) {
+    void result.catch(() => {
+      localeStore.set(getCurrentLocale())
+      applyDocumentLocale(getCurrentLocale())
+    })
+  }
 
   return locale
 }
@@ -42,5 +52,8 @@ export function syncDocumentLocale() {
     return
   }
 
-  applyDocumentLocale(getCurrentLocale())
+  const locale = getCurrentLocale()
+
+  localeStore.set(locale)
+  applyDocumentLocale(locale)
 }

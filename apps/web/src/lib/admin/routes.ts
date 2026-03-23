@@ -1,6 +1,6 @@
 import type { AdminPanel } from '$lib/types/app'
 import type { Component } from 'svelte'
-import { m } from '$lib/paraglide/messages.js'
+import { m } from '$lib/paraglide/messages'
 import AccountPage from '../../routes/(workspace)/account/+page.svelte'
 import GeneralPage from '../../routes/(workspace)/general/+page.svelte'
 import KnowledgePage from '../../routes/(workspace)/knowledge/+page.svelte'

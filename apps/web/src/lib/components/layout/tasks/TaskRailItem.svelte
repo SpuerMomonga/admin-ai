@@ -1,7 +1,7 @@
 <script lang='ts'>
   import type { TaskRecord, TaskStatus } from '$lib/stores/tasks'
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu'
-  import { m } from '$lib/paraglide/messages.js'
+  import { m } from '$lib/paraglide/messages'
   import { Ellipsis, PencilLine, Trash2 } from '@lucide/svelte'
 
   const {
@@ -69,10 +69,10 @@
         <span class='truncate text-sm font-medium text-foreground'>{task.title}</span>
       </div>
 
-      <div class='mt-1.5 flex items-center gap-1 pl-4 pr-8 text-[11px] text-muted-foreground'>
-        <span class='shrink-0'>{getTaskStatusLabel(task.status)}</span>
+      <div class='mt-1.5 flex min-w-0 items-center gap-1 overflow-hidden pl-4 pr-8 text-[11px] text-muted-foreground'>
+        <span class='min-w-0 truncate'>{getTaskStatusLabel(task.status)}</span>
         <span aria-hidden='true' class='shrink-0 text-[12px] leading-none text-muted-foreground/80'>•</span>
-        <span class='shrink-0'>{formatTime(task.updatedAt)}</span>
+        <span class='min-w-0 truncate text-right'>{formatTime(task.updatedAt)}</span>
       </div>
     {/if}
   </button>
